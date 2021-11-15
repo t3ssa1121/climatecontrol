@@ -30,6 +30,7 @@
             - python3-pip
             - virtualenv
             - python3-setuptools
+            - gpg
 
         when: ansible_os_family == 'Debian'
       #- debug: 
@@ -43,17 +44,20 @@
       
       # Adding the docker key
       - name: Download Docker GPG
+        become: yes
         apt_key:
           url: https://download.docker.com/linux/ubuntu/gpg
           state: present
       
       - name: Add Docker repository
+        become: yes
         apt_repository:
           repo: deb https://download.docker.com/linux/ubuntu focal stable
           state: present
       
       # Adding the docker runtime
       - name: Install Docker runtime
+        become: yes
         apt:
           update_cache: yes
           name: docker-ce
