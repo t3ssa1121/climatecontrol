@@ -1,12 +1,12 @@
 ARG OSVERSION=20.04
 FROM  ubuntu:${OSVERSION}
 RUN apt-get update && apt-get install -y \
-Iputils-ping\
-Iproute2\
-Tcpdump\
-Python3\
-Python3-pip\
-Git\
-Wget\
+iputils-ping \
+iproute2 \
+tcpdump \
+python3 \
+python3-pip \
+git \
+wget \
 curl \
 && apt-get clean
