@@ -27,7 +27,7 @@
             - ca-certificates
             - curl
             - software-properties-common
-            - python-3pip
+            - python3-pip
             - virtualenv
             - python3-setuptools
 
