@@ -1,0 +1,60 @@
+- name: Get host info
+  hosts: ssahosts
+  gather_facts: True
+  tasks:
+      # Install required software packages
+      - name: Upgrading new Ubuntu 20 LTS server to latest apt packages
+        become: yes
+        apt:
+            update_cache: yes
+            force_apt_get: yes
+            upgrade: dist
+        when: ansible_os_family == 'Debian'
+
+      - name: "Install base packages and utils"
+        become: yes
+        apt:
+            update_cache: yes
+            force_apt_get: yes
+            name: '{{ item }}'
+            state: latest
+        #register: stat_ntp_install
+        loop:
+            - tcpdump
+            - snapd
+            - inetutils-traceroute
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - software-properties-common
+            - python-3pip
+            - virtualenv
+            - python3-setuptools
+
+        when: ansible_os_family == 'Debian'
+      #- debug: 
+      #    var:  stat_ntp_install
+
+      # proper test for package being installed
+      - name:  Gather installed packages list
+        package_facts:
+          manager: apt
+        when: ansible_os_family == 'Debian'
+      
+      # Adding the docker key
+      - name: Download Docker GPG
+        apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+      
+      - name: Add Docker repository
+        apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu focal stable
+          state: present
+      
+      # Adding the docker runtime
+      - name: Install Docker runtime
+        apt:
+          update_cache: yes
+          name: docker-ce
+          state: latest
