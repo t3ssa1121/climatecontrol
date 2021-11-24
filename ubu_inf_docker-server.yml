@@ -31,6 +31,7 @@
             - virtualenv
             - python3-setuptools
             - gpg
+            - sqlite3
 
         when: ansible_os_family == 'Debian'
       #- debug: 
@@ -62,3 +63,19 @@
           update_cache: yes
           name: docker-ce
           state: latest
+      
+      # Set up some working locations
+      - name: Create user local scripts if doesn't exist
+        file:
+          path: /usr/local/scripts
+          state: directory
+          mode: '0755'
+        become: yes
+
+      - name: Create docker storage location
+        file:
+          path: /opt/storage
+          state: directory
+          mode: '0755'
+        become: yes  
+        

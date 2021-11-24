@@ -6,7 +6,7 @@ iproute2 \
 tcpdump \
 python3 \
 python3-pip \
-git \
 wget \
 curl \
 && apt-get clean
+RUN mkdir /opt/storage
