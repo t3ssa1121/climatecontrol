@@ -18,6 +18,7 @@
           name: mosquitto
           state: present
           gid: 1883
+        become: yes
 
       - name: " create mosquitto user"
         ansible.builtin.user:
@@ -26,6 +27,7 @@
           comment: "MQTT Broker user"
           uid: 1883
           group: mosquitto
+        become: yes
 
 
 
