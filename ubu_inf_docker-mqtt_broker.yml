@@ -1,0 +1,73 @@
+- name: Get host info
+  hosts: ssamqtt
+  gather_facts: True
+  tasks:
+      # Install required software packages
+      - name: Upgrading new Ubuntu 20 LTS server to latest apt packages
+        become: yes
+        apt:
+            update_cache: yes
+            force_apt_get: yes
+            upgrade: dist
+        when: ansible_os_family == 'Debian'
+
+
+      # Add Mosquito user and change directory ownwership
+      - name: "Create Mosquitto group"
+        ansible.builtin.group:
+          name: mosquitto
+          state: present
+          gid: 1883
+
+      - name: " create mosquitto user"
+        ansible.builtin.user:
+          name: mosquitto
+          shell: /usr/bin/bash
+          comment: "MQTT Broker user"
+          uid: 1883
+          group: mosquitto
+
+
+
+      # Storage location for MQTT persistent storage
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes  
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto/data
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes 
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto/config
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes 
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto/log
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes 
+
+      # to-do Create MQTT config file and copy it in place
+
+      
+

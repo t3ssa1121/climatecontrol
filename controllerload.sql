@@ -1,0 +1,6 @@
+INSERT INTO manodes (manode_id,manode_user,manode_pwd,diag_queue,temp_queue)
+VALUES (188234,'heater1','onou812','westdiagnostics','westdegrees')
+INSERT INTO manodes (manode_id,manode_user,manode_pwd,diag_queue,temp_queue)
+VALUES (108214,'chiller2','5150frankie','westdiagnostics','westdegrees')
+INSERT INTO manodes (manode_id,manode_user,manode_pwd,diag_queue,temp_queue)
+VALUES (123001,'heater3','84krammer','westdiagnostics','westdegrees')
