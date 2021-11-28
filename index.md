@@ -12,14 +12,17 @@ Markdown is a lightweight and easy-to-use syntax for styling your writing. It in
 Syntax highlighted code block
 
 # SSA Team 3 Project Archive
-## Header 2
-### Header 3
+## Design Document Links below represent archival repository of full system specification, design notes, early design diagrams, and speradsheets. 
+All of these collectively represent the underlying design considerations, critical examinations of design alternatives or options not included,
+and probability data which guided selection of vulnerabilities to be assigned countermeasures.
+
+### Archived Documents:
+
 
 - Bulleted
 - List
 
-1. Numbered
-2. List
+
 
 **Bold** and _Italic_ and `Code` text
 
