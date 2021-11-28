@@ -1,17 +1,5 @@
-## Welcome to GitHub Pages
+## SSA Team 3 Project Archive
 
-You can use the [editor on GitHub](https://github.com/t3ssa1121/climatecontrol/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
-
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
-
-### Markdown
-
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
-
-```markdown
-Syntax highlighted code block
-
-# SSA Team 3 Project Archive
 ## Design Document Links below represent archival repository of full system specification, design notes, early design diagrams, and speradsheets. 
 All of these collectively represent the underlying design considerations, critical examinations of design alternatives or options not included,
 and probability data which guided selection of vulnerabilities to be assigned countermeasures.
