@@ -8,24 +8,16 @@ As the assignment limit of 600 words does not permit full expression of the proc
 this archive is intended to be useful to the tutor or other graders as well as for futher reference by the design team in continuing onward in the 
 full design, code implementation and testing during units 4-6.
 
-### Archived Documents:
+### Archived .PDF Documents:
 
-- Bulleted
-- List
+- Climate_Control_Specification-final_draft.pdf
+- Probability_Domain_Ratings.xlsx - Actuator_Node_Proabilities.pdf
+- Probability_Domain_Ratings.xlsx - Controller_Probabilities.pdf
+- Actuator-Node_property_damage-v3-prob.pdf
 
+### Archived .png Documents:
 
+- IOT-DesignDraft_ZoneHeatController-draft-version3-conceptual.png
+- IOT-DesignDraft_ZoneHeatController-draft-version3-logical-v1.png
+- IOT-DesignDraft_ZoneHeatController-draft-version3-logical-v2.png
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/t3ssa1121/climatecontrol/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
