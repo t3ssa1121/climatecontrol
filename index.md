@@ -20,7 +20,8 @@ full design, code implementation and testing during units 4-6.
 
 ### Archived .png Documents:
 
-- IOT-DesignDraft_ZoneHeatController-draft-version3-conceptual.png
+[**IOT-DesignDraft_ZoneHeatController-draft-version3-conceptual.png**](https://github.com/t3ssa1121/climatecontrol/blob/gh-pages/IOT-DesignDraft_ZoneHeatController-draft-version3-conceptual.png)
+- 
 - IOT-DesignDraft_ZoneHeatController-draft-version3-logical-v1.png
 - IOT-DesignDraft_ZoneHeatController-draft-version3-logical-v2.png
 
