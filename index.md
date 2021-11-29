@@ -10,6 +10,7 @@ full design, code implementation and testing during units 4-6.
 
 ### Archived .PDF Documents:
 
+*   [Module 1 **Launching into Cyber Security**](https://crypto61.github.io/eportfolio/LCYS.md)
 - Climate_Control_Specification-final_draft.pdf
 - Probability_Domain_Ratings.xlsx - Actuator_Node_Proabilities.pdf
 - Probability_Domain_Ratings.xlsx - Controller_Probabilities.pdf
@@ -21,3 +22,4 @@ full design, code implementation and testing during units 4-6.
 - IOT-DesignDraft_ZoneHeatController-draft-version3-logical-v1.png
 - IOT-DesignDraft_ZoneHeatController-draft-version3-logical-v2.png
 
+*   [Module 1 **Launching into Cyber Security**](https://crypto61.github.io/eportfolio/LCYS.md)
