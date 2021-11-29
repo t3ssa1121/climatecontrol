@@ -10,7 +10,7 @@ full design, code implementation and testing during units 4-6.
 
 ### Archived .PDF Documents:
 
-*   [Module 1 **Launching into Cyber Security**](https://crypto61.github.io/eportfolio/LCYS.md)
+[**Climate_Control_Specification-final_draft.pdf**](https://https://github.com/t3ssa1121/climatecontrol/Climate_Control_Specification-final_draft.pdf)
 - Climate_Control_Specification-final_draft.pdf
 - Probability_Domain_Ratings.xlsx - Actuator_Node_Proabilities.pdf
 - Probability_Domain_Ratings.xlsx - Controller_Probabilities.pdf
