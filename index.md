@@ -13,7 +13,9 @@ full design, code implementation and testing during units 4-6.
 [**Climate_Control_Specification-final_draft.pdf**](https://github.com/t3ssa1121/climatecontrol/blob/gh-pages/Climate_Control_Specification-final_draft.pdf)
 
 [**Probability_Domain_Ratings.xlsx - Actuator_Node_Proabilities.pdf**](https://github.com/t3ssa1121/climatecontrol/blob/gh-pages/Probability_Domain_Ratings.xlsx%20-%20Actuator_Node_Proabilities%20(1).pdf)
+
 [**Probability_Domain_Ratings.xlsx - Controller_Probabilities.pdf**](https://github.com/t3ssa1121/climatecontrol/blob/gh-pages/Probability_Domain_Ratings.xlsx%20-%20Controller_Probabilities.pdf)
+
 [**Actuator-Node_property_damage-v3-prob.pdf**](https://github.com/t3ssa1121/climatecontrol/blob/gh-pages/Actuator-Node_property_damage-v3-prob.pdf)
 
 ### Archived .png Documents:
