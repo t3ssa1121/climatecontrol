@@ -70,6 +70,47 @@
         become: yes 
 
       # to-do Create MQTT config file and copy it in place
+      - name: create config file for listener
+        ansible.builtin.blockinfile:
+          path: /opt/mosquitto/config/mosquitto.conf
+          backup: yes
+          create: yes
+          group: mosquitto
+          owner: mosquitto
+          mode: 0755
+          state: present
+          block: |
+            {{ item }}
+          marker: "# ANSIBLE MANAGED BLOCK "
+        loop:
+          - { listener 1883 }
+          - { ' ' }
+          - { persistence true }
+          - { persistence_location /mosquitto/data/ }
+          - { ' '}
+          - { log_dest file /mosquitto/log/mosquitto.log }
+          - { log_dest stdout }
+          - { ' '}
+          - { password_file /mosquitto/config/mosquitto.passwd }
+          - { allow_anonymous false }
+
+      # add password file
+      - name: create password file with random complex cred
+        ansible.builtin.blockinfile:
+          path: /opt/mosquitto/config/mosquitto.passwd
+          backup: yes
+          create: yes
+          group: mosquitto
+          owner: mosquitto
+          mode: 0755
+          state: present
+          block: |
+            placeholder:$7$101$XPaHpUl+gGsX2gXp$6IEbTFqz8pNZKV9xH8HVXHPVxQ1UHZbOSJCg39YyRC09wXrZT5SpKcisuUvpn6YvwxpzbNz4oJOx8Xa+xMpKBQ==
+            nodetester:$7$101$DiKCuNBrRCMHJgiU$M+hcnGfuvqVOlwwIFsqxE52hhnHW2x75IRuafxHX7PjaFxwY3H1jiG60TOJ612nGAdeTEsvFl7l4EnKrz5i3qA==
+
+
+
+
 
       
 
