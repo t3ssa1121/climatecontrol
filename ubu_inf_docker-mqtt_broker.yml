@@ -80,16 +80,17 @@
           mode: 0755
           state: present
           marker: ""
-          block: |
-            {{ item }}
-        loop:
-          - listener 1883
-          - persistence true
-          - persistence_location /mosquitto/data/
-          - log_dest file /mosquitto/log/mosquitto.log
-          - log_dest stdout
-          - password_file /mosquitto/config/mosquitto.passwd
-          - allow_anonymous false
+          block: 
+            listener 1883
+
+            persistence true
+            persistence_location /mosquitto/data/
+
+            log_dest file /mosquitto/log/mosquitto.log
+            log_dest stdout
+
+            password_file /mosquitto/config/mosquitto.passwd
+            allow_anonymous false
         become: yes
 
       # add password file
