@@ -83,16 +83,17 @@
             {{ item }}
           marker: "# ANSIBLE MANAGED BLOCK "
         loop:
-          - { listener 1883 }
+          - { 'listener 1883' }
           - { ' ' }
-          - { persistence true }
-          - { persistence_location /mosquitto/data/ }
+          - { 'persistence true' }
+          - { 'persistence_location /mosquitto/data/' }
           - { ' '}
-          - { log_dest file /mosquitto/log/mosquitto.log }
-          - { log_dest stdout }
+          - { 'log_dest file /mosquitto/log/mosquitto.log' }
+          - { 'log_dest stdout' }
           - { ' '}
-          - { password_file /mosquitto/config/mosquitto.passwd }
-          - { allow_anonymous false }
+          - { 'password_file /mosquitto/config/mosquitto.passwd' }
+          - { 'allow_anonymous false' }
+        become: yes
 
       # add password file
       - name: create password file with random complex cred
@@ -107,7 +108,7 @@
           block: |
             placeholder:$7$101$XPaHpUl+gGsX2gXp$6IEbTFqz8pNZKV9xH8HVXHPVxQ1UHZbOSJCg39YyRC09wXrZT5SpKcisuUvpn6YvwxpzbNz4oJOx8Xa+xMpKBQ==
             nodetester:$7$101$DiKCuNBrRCMHJgiU$M+hcnGfuvqVOlwwIFsqxE52hhnHW2x75IRuafxHX7PjaFxwY3H1jiG60TOJ612nGAdeTEsvFl7l4EnKrz5i3qA==
-
+        become: yes
 
 
 
