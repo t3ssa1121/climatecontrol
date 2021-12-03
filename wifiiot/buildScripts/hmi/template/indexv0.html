@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+    <head> <title>{{ title }}</title></head>
+    <body>
+        <h1>Hey Move It!</h1>
+        <h2> Current Time Autonomous Systems: {{ time }} </h2>
+        <hr>
+        <h2> Current Status: Field Devices </h2>
+        <table><tr>
+            <td>buggie11</td><td>Online</td><td>27.26</td></tr>
+            <td>crane14</td><td>Online</td><td>18.12</td></tr>
+        </table>
+        <h3><a href="control/">Device Control</a></h3>
+        <form action="http://192.168.59.11:8080/ctrl1" method="POST">
+            <table>
+            <tr><td><p> DeviceId </td><td><input type="text" name="DeviceId"</p></td> </tr>
+            <tr><td><p> fwd/rev </p></td><td> <input type="text" name="Direction"</p></td></tr>
+            <tr><td><p> Operation time</td><td><input type="text" name="Duration"</p></td></tr>
+            <tr><td colspan="2"><p> <input type="submit" name="submit"</p> </td> </tr>       
+            </table>
+        </form>
+
+        <p> &COPY; 4D2 Engineering 2020</p>
+    </body>

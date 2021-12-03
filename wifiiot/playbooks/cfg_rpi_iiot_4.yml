@@ -1,0 +1,69 @@
+- name: Post Configure MQTT broker Apache
+  # define specific IP address for broker, should not be on all
+  hosts: 192.168.59.17
+  gather_facts: True
+  tasks:
+  # Build a broker & register it as a service
+    - name: Change Apache server port
+      become: yes
+      lineinfile:
+        path: /etc/apache2/ports.conf
+        regexp: '^Listen 80'
+        line: Listen 5280 
+      register: cmdstd 
+        #when: ansible_hostname == "grandmab"
+    - debug:
+        msg: "{{ cmdstd }}"
+
+    - name: Copy Apache Config file
+      register: cmdstd  
+      become: yes
+      copy:
+        src: wifiiot/broker/000-default.conf
+        dest: /etc/apache2/sites-available/
+        owner: root
+        group: root
+        mode: '0644'
+        backup: yes
+    - debug:
+        msg: "{{ cmdstd }}"
+
+    - name: Create Apache passwd
+      register: cmdstd
+      become: yes
+      htpasswd: 
+        path: /usr/local/etc/htpasswd
+        name: admin
+        password: 'password'
+        owner: root
+        group: www-data
+        mode: 0640        
+    - debug:
+        msg: "{{ cmdstd }}"
+    
+    # this probably belongs in mk_rpi
+    - name: replace symlink
+      register: cmdstd
+      become: yes
+      file:
+        src: /etc/apache2/sites-available/000-default.conf
+        dest: /etc/apache2/sites-enabled/000-default.conf
+        owner: root
+        group: root
+        state: link
+    - debug:
+        msg: "{{ cmdstd }}"
+    
+    - name: restart apache
+      register: cmdstd
+      become: yes
+      systemd:
+        name: apache2
+        state: "{{ item }}"
+      with_items:
+        - reloaded
+        - restarted
+    - debug:
+        msg: "{{ cmdstd }}"
+
+

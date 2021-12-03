@@ -1,0 +1,39 @@
+---
+- name: Get host info
+  #hosts: 192.168.95.15
+  hosts: liniiot
+  gather_facts: True
+  tasks:
+      # Install required software packages
+      - name: Upgrading 4D2 IIOT server to latest apt packages
+        apt:
+            update_cache: yes
+            force_apt_get: yes
+            upgrade: dist
+        become: yes
+        register: host_upg_stat
+      - debug: var=host_upg_stat
+
+      # Install the utilities needed
+      - name: Installing base utilities
+        apt: 
+          update_cache: yes
+          force_apt_get: yes
+          name: '{{ item }}' 
+          state: latest
+        loop:
+          - tcpdump
+          - apache2
+          - mosquitto
+          - mosquitto-clients
+          - python3-paho-mqtt
+          - python3-rpi.gpio
+          - screen
+        become: yes
+        register: host_pkg_add
+      - debug: var=host_pkg_add
+    
+      # Add break glass user
+
+      # spin PI passwd
+
