@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Data Recovery Access 
+</h1>
+<h2> {{scname}} {{pgmsg}} </h2>
+<div class="content">
+  <p> The following data is avaliable for download, please right click the link to your desired file and "save as" to ensure your files are not corrupted during download</p> 
+  <table>
+    <tr><th>Data File Name</th><th>Data File Date</th></tr>
+    {% for ftuple in filetuple %}
+    <tr>
+      <td> <a href={{ftuple[2]}} > {{ftuple[0]}}</a>  </td>
+      <td>{{ftuple[1]}}</td>
+    </tr>
+  {% endfor %}
+  </table>
+
+</div>
+
+{% endblock %}

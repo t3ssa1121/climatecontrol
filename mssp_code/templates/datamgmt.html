@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Data Backup and Recovery Services
+</h1>
+<h2> ID: {{scid}} , {{scname}} </h2>
+<div class="content">
+    <ul> 
+        <li><a href="{{ url_for('datamgmt.dm14') }}">Current - 14 days </a></li>
+        <li><a href="{{ url_for('datamgmt.dm30') }}"> 15 - 30 days </a></li>
+        <li><a href="{{ url_for('datamgmt.dm90') }}"> 30 - 90 days </a></li>
+        <li><a href="{{ url_for('datamgmt.dm99') }}"> Long term data archive </a></li>
+    </ul>
+
+</div>
+
+{% endblock %}
