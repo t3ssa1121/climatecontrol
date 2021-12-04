@@ -3,6 +3,9 @@ FROM  ubuntu:${OSVERSION}
 RUN apt-get update && apt-get install -y \
 python3 \
 python3-pip \
+iputils-ping \
+iproute2 \
+tcpdump \
 && apt-get clean
 # create a directory for persistent storage
 RUN mkdir /opt/storage
