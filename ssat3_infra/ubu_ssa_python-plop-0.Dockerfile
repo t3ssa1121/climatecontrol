@@ -12,6 +12,7 @@ python3-pip \
 iputils-ping \
 iproute2 \
 tcpdump \
+vim \
 && apt-get clean
 # create a directory for persistent storage
 RUN mkdir /opt/storage

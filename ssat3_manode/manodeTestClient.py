@@ -32,7 +32,7 @@ def setvars():
 
 def newclient(nodeid,uid,pwd):
     manodeid='manode-{}'.format(nodeid)
-    mqclient=mqtt.Client(manodeid)
+    mqclient=paho.Client(manodeid)
     mqclient.username_pw_set(username=uid,password=pwd)
     # Add TLS settings when ready
     return mqclient
