@@ -72,8 +72,8 @@ def newdiag(nodeid,comstats):
     timestamp=datetime.datetime.now().isoformat()
     # create dictionary then dump to json string
     diagdata={}
-    diagdata["manote_time"]=timestamp
-    diagdata["manote_id"]=nodeid
+    diagdata["manode_time"]=timestamp
+    diagdata["manode_id"]=nodeid
     diagdata["sensor1"]=sensor1
     diagdata["sensor2"]=sensor2
     diagdata["comstats"]=comstats
@@ -100,8 +100,8 @@ def main():
             # to do: test to make sure the temp was sent
             monitorcycle+=1
             time.sleep(random.randint(35,48))
-        # every 15-20 minutes collect diagnostics and publish them
-            if monitorcycle >= 20:
+        # every 15-20 minutes collect diagnostics and publish them (change to 20 for prod )
+            if monitorcycle >= 10:
                 diagdata=newdiag(nodevars[1],comfailurecount)
                 newtopicpub(thisclient,"dd",nodevars[1],diagdata)
                 monitorcycle=0
