@@ -68,11 +68,17 @@ def newdiag(nodeid,comstats):
     # simulation of collect maintenamce information from sensors
     # Send as a JSON string 
     sensor1=str(round(random.uniform(123.00,412.00),2))
-    sensor2=str(random.randint())
+    sensor2=str(random.randint(12,106))
     timestamp=datetime.datetime.now().isoformat()
-    # 
-    diagdata='{"manode_time":"{}", "manode_id":"{}","sensor1":"{}},"sensor2":"{}","commstats":"{}"}'.format(timestamp,nodeid,sensor1,sensor2,comstats)
-    return diagdata
+    # create dictionary then dump to json string
+    diagdata={}
+    diagdata["manote_time"]=timestamp
+    diagdata["manote_id"]=nodeid
+    diagdata["sensor1"]=sensor1
+    diagdata["sensor2"]=sensor2
+    diagdata["comstats"]=comstats
+    diagdatajson = json.dumps(diagdata)
+    return diagdatajson
 
 
 

@@ -26,6 +26,6 @@ COPY ma-node_requirements.txt  /opt/src/requirements.txt
 RUN pip install -r /opt/src/requirements.txt
 #
 #  Copy python scripts
-COPY manodeTestClient.py /opt/src
+COPY manodeTestClient.py /opt/qtemp
 # change to starting python on startup once 
 CMD ["bash"]
