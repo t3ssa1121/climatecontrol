@@ -19,17 +19,17 @@ from os import environ
 
 
 def setvars():
-    #CLIENTID=environ.get('CLIENTID')
-    #QID=environ.get('QID')
-    #QPWD=environ.get('QPWD')
-    #QHOST=environ.get('QHOST')
-    #QPORT=environ.get('QPORT')
+    CLIENTID=environ.get('CLIENTID')
+    QID=environ.get('QID')
+    QPWD=environ.get('QPWD')
+    QHOST=environ.get('QHOST')
+    QPORT=environ.get('QPORT')
     # temp standalone testing
-    CLIENTID='123456'
-    QID="nodetester""
-    QPWD="testINprod"
-    QHOST="10.100.200.3"
-    QPORT="1883"  
+    #CLIENTID='123456'
+    #QID="nodetester"
+    #QPWD="testINprod"
+    #QHOST="10.100.200.3"
+    #QPORT="1883"  
     return[CLIENTID,QID,QPWD,QHOST,QPORT]
 
 def newclient(nodeid,uid,pwd):

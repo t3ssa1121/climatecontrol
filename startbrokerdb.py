@@ -12,9 +12,9 @@ brokerdb='/opt/storage/controller.db'   # path to persistent database
 manodecount=3  # confirm you have all the nodes in teh design
 
 dbcon = sqlite3.connect(brokerdb)
-dbcur = dbcon.cursor
+dbcur = dbcon.cursor()
 nodelist=[]
-for row in dbcur.execute('select * from manodes order by manode-id'):
+for row in dbcur.execute('select * from manodes order by manode_id'):
     nodelist.append(row)
 
 if len(nodelist) == manodecount:
