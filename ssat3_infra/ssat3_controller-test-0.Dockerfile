@@ -30,5 +30,5 @@ RUN pip install -r /opt/src/requirements.txt
 #  Copy python scripts
 COPY controllerTestClient.py /opt/qtemp
 # change to starting python on startup once 
-CMD ["bash"]
-#CMD ["python3","./controllerTestClient.py"]
+#CMD ["bash"]
+CMD ["python3","./controllerTestClient.py"]
