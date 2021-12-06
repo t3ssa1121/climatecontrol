@@ -14,8 +14,9 @@ iproute2 \
 tcpdump \
 && apt-get clean
 # create a directories for persistent storage
-RUN mkdir /opt/storage/logs
-RUN mkdir /opt/storage/conf
+RUN mkdir /opt/storage && \
+mkdir /opt/storage/logs && \
+mkdir /opt/storage/conf
 # Build environment
 RUN mkdir /opt/qtemp
 WORKDIR /opt/qtemp
