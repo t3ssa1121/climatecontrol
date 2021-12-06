@@ -20,7 +20,8 @@ mkdir /opt/storage/conf
 # Build environment
 RUN mkdir /opt/qtemp
 WORKDIR /opt/qtemp
-RUN useradd --create-home --gid 2000 --uid 2000 lpuser
+# Create custom group
+RUN groupadd --gid 2000 lpuser && useradd --create-home --gid 2000 --uid 2000 lpuser
 USER lpuser
 # Update requirements as needed
 COPY ma-node_requirements.txt  /opt/src/requirements.txt
