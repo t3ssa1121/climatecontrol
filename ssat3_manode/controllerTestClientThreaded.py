@@ -130,25 +130,29 @@ def monitorsubscriptions(mqclient):
     newtopictreesub(mqclient,"ct")
     newtopictreesub(mqclient,"dd")
     # begin monitoring message queues
-    mqclient.loop_forever(retry_first_connection=True)
-    return
+    #mqclient.loop_forever(retry_first_connection=True)
+    while True:
+        print("I would be checking the two queue trees but")
+        time.sleep(45)
+
+        return
 
 def monitorsettemp(nodevars):
-    print("now start checking temperature")
+    #print("now start checking temperature")
     pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
     while True:
         print("checking for new temperature changes in {} ".format(nodevars[5]))
         if path.exists(nodevars[5]):
             print("processing new file")
             # create client only when ready to publish
-            mqpubstat=newconnect(pubclient,nodevars[3],nodevars[4])
-            if mqpubstat == 0:
-                # Simulate database query, node guid as unique ID & temperature set by user
-                thesetemps=getzonetemps(nodevars[5])
-                for key, value in thesetemps.items():
-                    newtemppub(pubclient,key,value)
-            pubclient.disconnect()
-        time.sleep(60)
+            #mqpubstat=newconnect(pubclient,nodevars[3],nodevars[4])
+            #if mqpubstat == 0:
+            #    # Simulate database query, node guid as unique ID & temperature set by user
+            #    thesetemps=getzonetemps(nodevars[5])
+            #    for key, value in thesetemps.items():
+            #        newtemppub(pubclient,key,value)
+            #pubclient.disconnect()
+        time.sleep(30)
         return
 
 
@@ -161,21 +165,22 @@ def main():
     comfailurecount=0
     extendedcomfailure=False
     #
-    if mqsubstat == 0:
+    #if mqsubstat == 0:
+    if True:
             # On successful connection:
             # migrate monitoring of current temperature and diagnostics to a background thread
-            #subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
-            #subscriptionthread.start()
-            subproc=Process(target=monitorsubscriptions(subclient))
-            subproc.start()
+            subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
+            subscriptionthread.start()
+            #subproc=Process(target=monitorsubscriptions(subclient))
+            #subproc.start()
             # presuming the monitoring thread started ok start a second loop checking for temp updates
-            #pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
-            #pubtopicthread.start()
-            pubproc=Process(target=monitorsettemp(nodevars))
-            pubproc.start()
+            pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
+            pubtopicthread.start()
+            #pubproc=Process(target=monitorsettemp(nodevars))
+            #pubproc.start()
             #
-            subproc.join()
-            pubproc.join()
+            #subproc.join()
+            #pubproc.join()
             
             
     elif not extendedcomfailure and comfailurecount < 10 :
@@ -201,19 +206,6 @@ def main():
             print("Contact 1-800-noqtemp to report outage")
             time.sleep(600)
     
-   
-
-
-                
-
-
-
-
-
-
-
-
-
 
 if __name__=="__main__":
     main()
