@@ -78,6 +78,7 @@ def updatecurtemp(logfile,recdict):
     # clean up with a file arg
     with open(logfile, 'a') as jsonfh:
          json.dump(recdict,jsonfh)
+         jsonfh.write('\n')
     return
 
 
