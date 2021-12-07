@@ -176,7 +176,9 @@ def main():
     # presuming the monitoring thread started ok start a second loop checking for temp updates
     pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
     while True:
+        print("checking for new temperature changes in {} ".format(nodevars[5]))
         if path.exists(nodevars[5]):
+            print("processing new file")
             # create client only when ready to publish
             mqpubconstat=newconnect(thisclient,nodevars[3],nodevars[4])
             if mqpubconstat == 0:
