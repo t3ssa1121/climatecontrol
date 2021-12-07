@@ -17,6 +17,7 @@ import  paho.mqtt.client as paho
 import json, sys, datetime,random,time, threading,csv
 from os import environ
 from os import path
+from multiprocessing import Process
 
 
 def setvars():
@@ -163,11 +164,13 @@ def main():
     if mqsubstat == 0:
             # On successful connection:
             # migrate monitoring of current temperature and diagnostics to a background thread
-            subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
-            subscriptionthread.start()
+            #subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
+            #subscriptionthread.start()
+            Process(target=monitorsubscriptions(subclient)).start()
             # presuming the monitoring thread started ok start a second loop checking for temp updates
-            pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
-            pubtopicthread.start()
+            #pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
+            #pubtopicthread.start()
+            Process(target=monitorsettemp(nodevars)).start()
             
             
     elif not extendedcomfailure and comfailurecount < 10 :
