@@ -147,9 +147,9 @@ def main():
     if mqsubstat == 0:
             # On successful connection:
             # migrate monitoring of current temperature and diagnostics to a background thread
-            subscriptionthread = threading.Thread(target=monitorsubscriptions(thisclient))
+            subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
             subscriptionthread.start()
-
+            print("now start checking temperature")
              # presuming the monitoring thread started ok start a second loop checking for temp updates
             pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
             while True:
