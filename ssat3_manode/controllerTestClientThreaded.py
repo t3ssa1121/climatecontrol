@@ -95,12 +95,12 @@ def on_message_write(mqclient, userdata, msg):
 def processcurtemp(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Current Temperature for MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    return [nodeid,(str(msg.payload).decode("utf-8"))]
+    return [nodeid,(msg.payload).decode("utf-8")]
 
 def processdiagnotics(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Diagnostics report from MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    return [nodeid,(str(msg.payload).decode("utf-8"))]
+    return [nodeid,(msg.payload).decode("utf-8")]
 
 def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
