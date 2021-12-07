@@ -109,17 +109,6 @@ def newtemp():
     curtemp=str(round(random.uniform(10.00,35.00),2))
     return curtemp
 
-# This monitoring function needs to run as it's own thread
-# collecting current temp and system diagnostics for a zone is 
-# lower priority than setting a new temperature
-def monitorsubscriptions(mqclient):
-    mqclient.on_message = on_message_write
-    # Subscribe to current temperature and diagnostics topics
-    newtopictreesub(mqclient,"ct")
-    newtopictreesub(mqclient,"dd")
-    # begin monitoring message queues
-    mqclient.loop_forever(retry_first_connection=True)
-
 def getzonetemps(filepath):
     # stub process for changing temperature,  node-guid,temp  where temp is float 
     newzonetemps={}
@@ -131,9 +120,36 @@ def getzonetemps(filepath):
     return newzonetemps
 
 
+# This monitoring function needs to run as it's own thread
+# collecting current temp and system diagnostics for a zone is 
+# lower priority than setting a new temperature
+def monitorsubscriptions(mqclient):
+    mqclient.on_message = on_message_write
+    # Subscribe to current temperature and diagnostics topics
+    newtopictreesub(mqclient,"ct")
+    newtopictreesub(mqclient,"dd")
+    # begin monitoring message queues
+    mqclient.loop_forever(retry_first_connection=True)
+    return
 
+def monitorsettemp(nodevars):
+    print("now start checking temperature")
+    pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
+    while True:
+        print("checking for new temperature changes in {} ".format(nodevars[5]))
+        if path.exists(nodevars[5]):
+            print("processing new file")
+            # create client only when ready to publish
+            mqpubstat=newconnect(pubclient,nodevars[3],nodevars[4])
+            if mqpubstat == 0:
+                # Simulate database query, node guid as unique ID & temperature set by user
+                thesetemps=getzonetemps(nodevars[5])
+                for key, value in thesetemps.items():
+                    newtemppub(pubclient,key,value)
+            pubclient.disconnect()
+        time.sleep(60)
+        return
 
-    
 
 
 def main():
@@ -149,22 +165,10 @@ def main():
             # migrate monitoring of current temperature and diagnostics to a background thread
             subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
             subscriptionthread.start()
-            print("now start checking temperature")
-             # presuming the monitoring thread started ok start a second loop checking for temp updates
-            pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
-            while True:
-                print("checking for new temperature changes in {} ".format(nodevars[5]))
-                if path.exists(nodevars[5]):
-                    print("processing new file")
-                    # create client only when ready to publish
-                    mqpubstat=newconnect(thisclient,nodevars[3],nodevars[4])
-                    if mqpubstat == 0:
-                        # Simulate database query, node guid as unique ID & temperature set by user
-                        thesetemps=getzonetemps(nodevars[5])
-                        for key, value in thesetemps.items():
-                            newtemppub(pubclient,key,value)
-                        pubclient.disconnect()
-                time.sleep(60)
+            # presuming the monitoring thread started ok start a second loop checking for temp updates
+            pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
+            pubtopicthread.start()
+            
             
     elif not extendedcomfailure and comfailurecount < 10 :
             # Attempt to reconnect for ~ 20 minutes 
