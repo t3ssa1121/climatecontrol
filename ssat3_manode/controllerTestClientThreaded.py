@@ -138,8 +138,9 @@ def main():
     #
     if mqconstat == 0:
             # On successful connection:
-            # assign on message callback to client and 
-            monitorsubscriptions(thisclient)
+            # migrate monitoring of current temperature and diagnostics to a background thread
+            subscriptionthread = threading.Thread(target=monitorsubscriptions(thisclient))
+            subscriptionthread.start()
             #thisclient.on_message = on_message
             ## Subscribe to current temperature and diagnostics topics
             #newtopictreesub(thisclient,"ct")
@@ -156,7 +157,6 @@ def main():
                 mqconstat=newconnect(thisclient,nodevars[3],nodevars[4])
                 time.sleep(5)
                 comfailurecount+=1    
-
 
     else:
             extendedcomfailure = True
