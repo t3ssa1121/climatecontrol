@@ -88,7 +88,7 @@ def processcurtemp(nodeid,msg):
 def processdiagnotics(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Diagnostics report from MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    updatediaglog('/opt/storage/logs/currenttemp.json',str((msg.payload).decode("utf-8")))
+    updatediaglog('/opt/storage/logs/ma-node_diags.json',str((msg.payload).decode("utf-8")))
     return 
 
 def newtopicpub(mqclient,topic,nodeid,data):
