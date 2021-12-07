@@ -58,6 +58,7 @@ def on_connect(client,userdata,flags,rc):
     else:
         print("Connection failed, rc: " +connack_strin(rc))
 
+
 def on_message(mqclient, userdata, msg):
     # when message is recieved on a queue that is subscribed to this callback event fires
     # read the content of the message, call functions based on content
@@ -73,6 +74,14 @@ def on_message(mqclient, userdata, msg):
     return
 
 
+def updatecurtemp(logfile,recdict):
+    # clean up with a file arg
+    with open(logfile, 'a') as jsonfh:
+         json.dump(recdict,jsonfh)
+    return
+
+
+
 def on_message_write(mqclient, userdata, msg):
     # when message is recieved on a queue that is subscribed to this callback event fires
     # read the content of the message, call functions based on content
@@ -80,9 +89,9 @@ def on_message_write(mqclient, userdata, msg):
         print("UserData included: {}".format(userdata))
     result=tuple((msg.topic).split("/"))
     if result[0]=="ct":
-        curtemplist=processcurtemp(result[1],msg)
+        processcurtemp(result[1],msg)
         # get data back & append to file
-        print(curtemplist)
+        #print(curtemplist)
     elif result[0]=="dd":
         diaglist=processdiagnotics(result[1],msg)
         # get data back & append to file  
@@ -95,7 +104,10 @@ def on_message_write(mqclient, userdata, msg):
 def processcurtemp(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Current Temperature for MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    return [nodeid,(msg.payload).decode("utf-8")]
+    timestamp=datetime.datetime.now().isoformat()
+    recdict={'timestamp':timestamp,'manodeid':nodeid,'curtemp':str((msg.payload).decode("utf-8"))}
+    updatecurtemp('/opt/storage/logs/currenttemp.json',recdict)
+    return 
 
 def processdiagnotics(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
