@@ -138,17 +138,33 @@ def getzonetemps(filepath):
 
 def main():
     nodevars=setvars()
-    thisclient=newclient(nodevars[0],nodevars[1],nodevars[2])
-    mqconstat=newconnect(thisclient,nodevars[3],nodevars[4])
+    subclient=newclient(nodevars[0],nodevars[1],nodevars[2])
+    mqsubstat=newconnect(subclient,nodevars[3],nodevars[4])
     # communication failure mitigations
     comfailurecount=0
     extendedcomfailure=False
     #
-    if mqconstat == 0:
+    if mqsubstat == 0:
             # On successful connection:
             # migrate monitoring of current temperature and diagnostics to a background thread
             subscriptionthread = threading.Thread(target=monitorsubscriptions(thisclient))
             subscriptionthread.start()
+
+             # presuming the monitoring thread started ok start a second loop checking for temp updates
+            pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
+            while True:
+                print("checking for new temperature changes in {} ".format(nodevars[5]))
+                if path.exists(nodevars[5]):
+                    print("processing new file")
+                    # create client only when ready to publish
+                    mqpubstat=newconnect(thisclient,nodevars[3],nodevars[4])
+                    if mqpubstat == 0:
+                        # Simulate database query, node guid as unique ID & temperature set by user
+                        thesetemps=getzonetemps(nodevars[5])
+                        for key, value in thesetemps.items():
+                            newtemppub(pubclient,key,value)
+                        pubclient.disconnect()
+                time.sleep(60)
             
     elif not extendedcomfailure and comfailurecount < 10 :
             # Attempt to reconnect for ~ 20 minutes 
@@ -157,7 +173,7 @@ def main():
                 #
                 backoffinterval=(30 * comfailurecount) + random.randint(10,30)
                 time.sleep(backoffinterval)
-                mqconstat=newconnect(thisclient,nodevars[3],nodevars[4])
+                mqconstat=newconnect(subclient,nodevars[3],nodevars[4])
                 time.sleep(5)
                 comfailurecount+=1    
 
@@ -173,21 +189,7 @@ def main():
             print("Contact 1-800-noqtemp to report outage")
             time.sleep(600)
     
-    # presuming the monitoring thread started ok start a second loop checking for temp updates
-    pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
-    while True:
-        print("checking for new temperature changes in {} ".format(nodevars[5]))
-        if path.exists(nodevars[5]):
-            print("processing new file")
-            # create client only when ready to publish
-            mqpubconstat=newconnect(thisclient,nodevars[3],nodevars[4])
-            if mqpubconstat == 0:
-                # Simulate database query, node guid as unique ID & temperature set by user
-                thesetemps=getzonetemps(nodevars[5])
-                for key, value in thesetemps.items():
-                    newtemppub(pubclient,key,value)
-                thisclient.disconnect()
-        time.sleep(60)
+   
 
 
                 
