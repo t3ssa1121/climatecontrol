@@ -58,7 +58,7 @@ def updatecurtemp(logfile,recdict):
 
 def updatediaglog(logfile,recjson):
     with open(logfile, 'a') as jsonfh:
-         json.dumps(recjson,jsonfh)
+         jsonfh.write(recjson)
          jsonfh.write('\n')
     return
 
