@@ -80,11 +80,13 @@ def on_message_write(mqclient, userdata, msg):
         print("UserData included: {}".format(userdata))
     result=tuple((msg.topic).split("/"))
     if result[0]=="ct":
-        processcurtemp(result[1],msg)
+        curtemplist=processcurtemp(result[1],msg)
         # get data back & append to file
+        print(curtemplist)
     elif result[0]=="dd":
-        processdiagnotics(result[1],msg)
+        diaglist=processdiagnotics(result[1],msg)
         # get data back & append to file  
+        print(diaglist)
     else:
         print("warning undefined topic: {}".format(msg.topic))
         # write to security log       
@@ -93,12 +95,12 @@ def on_message_write(mqclient, userdata, msg):
 def processcurtemp(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Current Temperature for MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    return
+    return [nodeid,(str(msg.payload).decode("utf-8"))]
 
 def processdiagnotics(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Diagnostics report from MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    return
+    return [nodeid,(str(msg.payload).decode("utf-8"))]
 
 def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
@@ -133,26 +135,19 @@ def main():
     # communication failure mitigations
     comfailurecount=0
     extendedcomfailure=False
-    # Diagnositcs loop control
-    #monitorcycle=0
     #
     if mqconstat == 0:
             # On successful connection:
             # migrate monitoring of current temperature and diagnostics to a background thread
             subscriptionthread = threading.Thread(target=monitorsubscriptions(thisclient))
             subscriptionthread.start()
-            #thisclient.on_message = on_message
-            ## Subscribe to current temperature and diagnostics topics
-            #newtopictreesub(thisclient,"ct")
-            #newtopictreesub(thisclient,"dd")
-            ## begin monitoring message queues
-            #thisclient.loop_forever(retry_first_connection=True)
-        
+            
     elif not extendedcomfailure and comfailurecount < 10 :
-            while comfailurecount < 10 :
+            # Attempt to reconnect for ~ 20 minutes 
+            while comfailurecount < 10  and mqconstat != 0:
                 print("MQTT Broker connection failure, reattemp in {} seconds".format(45 * comfailurecount))
                 #
-                backoffinterval=(45 * comfailurecount) + random.randint(10,30)
+                backoffinterval=(30 * comfailurecount) + random.randint(10,30)
                 time.sleep(backoffinterval)
                 mqconstat=newconnect(thisclient,nodevars[3],nodevars[4])
                 time.sleep(5)
