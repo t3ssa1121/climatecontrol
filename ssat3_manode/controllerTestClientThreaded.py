@@ -14,8 +14,9 @@
 ############################################################
 
 import  paho.mqtt.client as paho
-import json, sys, datetime,random,time, threading
+import json, sys, datetime,random,time, threading,csv
 from os import environ
+from os import path
 
 
 def setvars():
@@ -29,8 +30,9 @@ def setvars():
     QID="nodetester"
     QPWD="testINprod"
     QHOST="10.100.200.3"
-    QPORT="1883"  
-    return[CLIENTID,QID,QPWD,QHOST,QPORT]
+    QPORT="1883"
+    SETTEMP="/opt/storage/data/setnewtemp.csv"  
+    return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP]
 
 def newclient(nodeid,uid,pwd):
     ctlnodeid='controller-{}'.format(nodeid)
@@ -38,9 +40,6 @@ def newclient(nodeid,uid,pwd):
     # Removing anonymous access to MQTT broker forces an attacker to gain creds
     # before they can attempt to send malicious messages 
     mqclient.username_pw_set(username=uid,password=pwd)
-    # MQTT supports wildcard based topics which simplifies subscription
-    #mqclient.subscribe("ct/#")
-    #mqclient.subscribe("dd/#")
     # Add TLS settings when ready
     return mqclient
 
@@ -51,37 +50,17 @@ def newconnect(mqclient,mqhost,mqport):
     #mqconstat=mqclient.connect(mqhost)
     return mqconstat
 
-def on_connect(client,userdata,flags,rc):
-    # confirm connection worked, print response code
-    if rc==0:
-        print("Successful connection to broker")
-    else:
-        print("Connection failed, rc: " +connack_strin(rc))
-
-
-def on_message(mqclient, userdata, msg):
-    # when message is recieved on a queue that is subscribed to this callback event fires
-    # read the content of the message, call functions based on content
-    if userdata is not None:
-        print("UserData included: {}".format(userdata))
-    result=tuple((msg.topic).split("/"))
-    if result[0]=="ct":
-        processcurtemp(result[1],msg)
-    elif result[0]=="dd":
-        processdiagnotics(result[1],msg) 
-    else:
-        print("warning undefined topic: {}".format(msg.topic))       
-    return
-
-
 def updatecurtemp(logfile,recdict):
-    # clean up with a file arg
     with open(logfile, 'a') as jsonfh:
          json.dump(recdict,jsonfh)
          jsonfh.write('\n')
     return
 
-
+def updatediaglog(logfile,recjson):
+    with open(logfile, 'a') as jsonfh:
+         json.dumps(recjson,jsonfh)
+         jsonfh.write('\n')
+    return
 
 def on_message_write(mqclient, userdata, msg):
     # when message is recieved on a queue that is subscribed to this callback event fires
@@ -91,12 +70,8 @@ def on_message_write(mqclient, userdata, msg):
     result=tuple((msg.topic).split("/"))
     if result[0]=="ct":
         processcurtemp(result[1],msg)
-        # get data back & append to file
-        #print(curtemplist)
     elif result[0]=="dd":
-        diaglist=processdiagnotics(result[1],msg)
-        # get data back & append to file  
-        print(diaglist)
+        processdiagnotics(result[1],msg)
     else:
         print("warning undefined topic: {}".format(msg.topic))
         # write to security log       
@@ -113,11 +88,16 @@ def processcurtemp(nodeid,msg):
 def processdiagnotics(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
     print("Diagnostics report from MA-Node : {} is {}".format(nodeid,str(msg.payload)))
-    return [nodeid,(msg.payload).decode("utf-8")]
+    updatediaglog('/opt/storage/logs/currenttemp.json',str((msg.payload).decode("utf-8")))
+    return 
 
 def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
     mqclient.publish(topic,data)
+    return
+
+def newtemppub(mqclient,topicstr,data):
+    mqclient.publish(topicstr,data)
     return
 
 def newtopictreesub(mqclient,topic):
@@ -129,6 +109,9 @@ def newtemp():
     curtemp=str(round(random.uniform(10.00,35.00),2))
     return curtemp
 
+# This monitoring function needs to run as it's own thread
+# collecting current temp and system diagnostics for a zone is 
+# lower priority than setting a new temperature
 def monitorsubscriptions(mqclient):
     mqclient.on_message = on_message_write
     # Subscribe to current temperature and diagnostics topics
@@ -136,6 +119,18 @@ def monitorsubscriptions(mqclient):
     newtopictreesub(mqclient,"dd")
     # begin monitoring message queues
     mqclient.loop_forever(retry_first_connection=True)
+
+def getzonetemps(filepath):
+    # stub process for changing temperature,  node-guid,temp  where temp is float 
+    newzonetemps={}
+    with open(filepath,'r') as csvfh:
+        csv_reader = csv.reader(csvfh,delimeter=",")
+        for row in csv_reader:
+            topicstring='st/{}'.format(row[0])
+            newzonetemps[topicstring] = row[1]
+    return newzonetemps
+
+
 
 
     
@@ -177,6 +172,31 @@ def main():
             print("Maintaining current climate control programming")
             print("Contact 1-800-noqtemp to report outage")
             time.sleep(600)
+    
+    # presuming the monitoring thread started ok start a second loop checking for temp updates
+    pubclient=newclient(nodevars[0],nodevars[1],nodevars[2])
+    while True:
+        if path.exists(nodevars[5]):
+            # create client only when ready to publish
+            mqpubconstat=newconnect(thisclient,nodevars[3],nodevars[4])
+            if mqpubconstat == 0:
+                # Simulate database query, node guid as unique ID & temperature set by user
+                thesetemps=getzonetemps(nodevars[5])
+                for key, value in thesetemps.items():
+                    newtemppub(pubclient,key,value)
+                thisclient.disconnect()
+        time.sleep(60)
+
+
+                
+
+
+
+
+
+
+
+
 
 
 if __name__=="__main__":
