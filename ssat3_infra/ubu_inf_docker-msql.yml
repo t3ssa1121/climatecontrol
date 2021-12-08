@@ -1,0 +1,40 @@
+- name: Get host info
+  hosts: ssamsql
+  gather_facts: True
+  tasks:
+      # Make changes to an Ubuntu server hosting docker containers
+      # This creates a user acount and storage point the mysql
+      # container user can write too if needed. 
+      # Run docker as user mysql, UID:3306, GID:3306 
+      #
+
+      # Add mysql user and change directory ownwership
+      - name: "Create mysql group"
+        ansible.builtin.group:
+          name: mysql
+          state: present
+          gid: 3306
+        become: yes
+
+      - name: " create mysql user"
+        ansible.builtin.user:
+          name: mysql
+          shell: /usr/bin/bash
+          comment: "MSQL user for docker file permissions"
+          uid: 3306
+          group: mysql
+        become: yes
+
+      # Storage location for mysql persistent storage
+
+      - name: Create mysql storage location
+        ansible.builtin.file:
+          path: /opt/storage/db
+          state: directory
+          mode: '0755'
+          owner: mysql
+          group: mysql
+        become: yes  
+      
+      
+
