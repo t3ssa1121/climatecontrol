@@ -29,7 +29,7 @@ def setvars():
     # temp standalone testing
     CLIENTID='123456'
     QID="nodetester"
-    QPWD="testINprod"
+    QPWD="changeme"
     QHOST="10.100.200.3"
     QPORT="1883"
     SETTEMP="/opt/storage/data/setnewtemp.csv"  

@@ -1,3 +1,4 @@
+USE qtempapp;
 INSERT INTO nodedatatmp (manodeguid) VALUES ('5ea489d1-9a6e-4718-a485-d35fd2e526ae');
 INSERT INTO nodedatatmp (manodeguid) VALUES ('617985f7-4d40-4b26-9d79-b958fa5bd7c6');
 INSERT INTO nodedatatmp (manodeguid) VALUES ('7273b5fe-be3a-4728-b365-567e86f10abc');

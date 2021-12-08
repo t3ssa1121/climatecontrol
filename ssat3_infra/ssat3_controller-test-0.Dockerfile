@@ -24,7 +24,7 @@ WORKDIR /opt/qtemp
 RUN groupadd --gid 2000 lpuser && useradd --create-home --gid 2000 --uid 2000 lpuser
 USER lpuser
 # Update requirements as needed
-COPY ma-node_requirements.txt  /opt/src/requirements.txt
+COPY controller_requirements.txt  /opt/src/requirements.txt
 RUN pip install -r /opt/src/requirements.txt
 #
 #  Copy python scripts

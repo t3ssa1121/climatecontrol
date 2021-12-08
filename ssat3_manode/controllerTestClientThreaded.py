@@ -18,6 +18,7 @@ import json, sys, datetime,random,time, threading,csv
 from os import environ
 from os import path
 from multiprocessing import Process
+from mysql.connector import connect, Error
 
 
 def setvars():
@@ -26,14 +27,22 @@ def setvars():
     #QPWD=environ.get('QPWD')
     #QHOST=environ.get('QHOST')
     #QPORT=environ.get('QPORT')
+    #DBHOST=environ.get('DBHOST')
+    #DBUSER=environ.get('DBUSER')
+    #DBPWD=environ.get('DBPWD')
+    #DBINST=environ.get('DBINST')
     # temp standalone testing
     CLIENTID='123456'
     QID="nodetester"
-    QPWD="testINprod"
+    QPWD="changeme"
     QHOST="10.100.200.3"
     QPORT="1883"
-    SETTEMP="/opt/storage/data/setnewtemp.csv"  
-    return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP]
+    SETTEMP="/opt/storage/data/setnewtemp.csv"
+    DBHOST="10.100.200.3"
+    DBUSER="lpappuser"
+    DBPWD="changeme"
+    DBINST="qtempapp"
+    return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP,DBHOST,DBUSER,DBPWD,DBINST]
 
 def newclient(nodeid,uid,pwd):
     ctlnodeid='controller-{}'.format(nodeid)
@@ -51,11 +60,33 @@ def newconnect(mqclient,mqhost,mqport):
     #mqconstat=mqclient.connect(mqhost)
     return mqconstat
 
+def getdbconnection(dbhost,dbuser,dbcred,dbinst):
+    try:
+        thisdbhandle = connect(host=dbhost,user=dbuser,password=dbcred,database=dbinst)
+        return thisdbhandle
+    except Error as e:
+        print(e)
+
+def newcurtempsql(nodeid,curtemp):
+    sqlstr='update nodedatatmp set curtemp={} where manodeguid={};'.format(nodeid,curtemp)
+    return sqlstr
+
 def updatecurtemp(logfile,recdict):
+    # Write to logfile
     with open(logfile, 'a') as jsonfh:
          json.dump(recdict,jsonfh)
          jsonfh.write('\n')
+    # Write to database
+    nodevars=setvars()
+    dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
+    #confirm connection before generating SQL
+    if dbconnect:
+        newsql=newcurtempsql(recdict['manodeid'],recdict['curtemp'])
+        with dbconnect.cursor() as cursor:
+            cursor.execute(newsql)
+            dbconnect.commit()
     return
+
 
 def updatediaglog(logfile,recjson):
     with open(logfile, 'a') as jsonfh:
@@ -111,6 +142,7 @@ def newtemp():
     return curtemp
 
 def getzonetemps(filepath):
+    # Convert to database query, then encrypt payload, then publish to node's st queue
     # stub process for changing temperature,  node-guid,temp  where temp is float 
     newzonetemps={}
     with open(filepath,'r') as csvfh:
@@ -119,6 +151,7 @@ def getzonetemps(filepath):
             topicstring='st/{}'.format(row[0])
             newzonetemps[topicstring] = row[1]
     return newzonetemps
+
 
 
 # This monitoring function needs to run as it's own thread
@@ -165,8 +198,7 @@ def main():
     comfailurecount=0
     extendedcomfailure=False
     #
-    #if mqsubstat == 0:
-    if True:
+    if mqsubstat == 0:
             # On successful connection:
             # migrate monitoring of current temperature and diagnostics to a background thread
             subscriptionthread = threading.Thread(target=monitorsubscriptions(subclient))
@@ -174,8 +206,8 @@ def main():
             #subproc=Process(target=monitorsubscriptions(subclient))
             #subproc.start()
             # presuming the monitoring thread started ok start a second loop checking for temp updates
-            pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
-            pubtopicthread.start()
+            #pubtopicthread = threading.Thread(target=monitorsettemp(nodevars))
+            #pubtopicthread.start()
             #pubproc=Process(target=monitorsettemp(nodevars))
             #pubproc.start()
             #
