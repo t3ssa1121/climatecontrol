@@ -8,12 +8,12 @@
       # Run docker as user mysql, UID:3306, GID:3306 
       #
 
-      # Add mysql user and change directory ownwership
+      # Add mysql user and change directory ownwership ( offical mysql docker image uid is 27)
       - name: "Create mysql group"
         ansible.builtin.group:
           name: mysql
           state: present
-          gid: 3306
+          gid: 27
         become: yes
 
       - name: " create mysql user"
@@ -21,7 +21,7 @@
           name: mysql
           shell: /usr/bin/bash
           comment: "MYSQL user for docker file permissions"
-          uid: 3306
+          uid: 27
           group: mysql
         become: yes
 
