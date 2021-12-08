@@ -163,12 +163,13 @@ def monitorsubscriptions(mqclient):
     newtopictreesub(mqclient,"ct")
     newtopictreesub(mqclient,"dd")
     # begin monitoring message queues
-    #mqclient.loop_forever(retry_first_connection=True)
-    while True:
-        print("I would be checking the two queue trees but")
-        time.sleep(45)
+    mqclient.loop_forever(retry_first_connection=True)
+    #while True:
+    #    print("I would be checking the two queue trees but")
+    #    time.sleep(45)
 
-        return
+        #return
+    return
 
 def monitorsettemp(nodevars):
     #print("now start checking temperature")
