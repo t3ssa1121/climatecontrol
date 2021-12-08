@@ -1,5 +1,5 @@
 - name: Get host info
-  hosts: ssamsql
+  hosts: ssamysql
   gather_facts: True
   tasks:
       # Make changes to an Ubuntu server hosting docker containers
@@ -20,7 +20,7 @@
         ansible.builtin.user:
           name: mysql
           shell: /usr/bin/bash
-          comment: "MSQL user for docker file permissions"
+          comment: "MYSQL user for docker file permissions"
           uid: 3306
           group: mysql
         become: yes
