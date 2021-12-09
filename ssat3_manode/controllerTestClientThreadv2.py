@@ -87,6 +87,9 @@ def main():
     mqsubstat=newconnect(subclient,nodevars[3],nodevars[4])
     if mqsubstat== 0:
         print("successful connection to mqqt broker")
+        #Subscribe now
+        newtopictreesub(subclient,"ct")
+        newtopictreesub(subclient,"dd")
         # Loop start puts queue subscription into a backgroun thread
         subclient.loop_start()
         while True:
@@ -100,3 +103,4 @@ def main():
 
 
 if __name__=="__main__":
+    main()
