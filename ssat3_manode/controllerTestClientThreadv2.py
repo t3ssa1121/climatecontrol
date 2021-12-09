@@ -35,6 +35,7 @@ def setvars():
     DBINST="qtempapp"
     return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP,DBHOST,DBUSER,DBPWD,DBINST]
 
+# MQTT client functions 
 # configure client connection so it is uniquely identified and also has a username and password applied
 def newclient(nodeid,uid,pwd):
     ctlnodeid='controller-{}'.format(nodeid)
@@ -79,7 +80,57 @@ def newtopicpub(mqclient,topic,nodeid,data):
     mqclient.publish(topic,data, qos=1,retain=True)
     return
 
-# set random temp for random MA-Nodes
+# database section
+def getdbconnection(dbhost,dbuser,dbcred,dbinst):
+    try:
+        thisdbhandle = connect(host=dbhost,user=dbuser,password=dbcred,database=dbinst)
+        return thisdbhandle
+    except Error as e:
+        print(e)
+
+def newcurtempsql(nodeid,curtemp):
+    sqlstr='update nodedatatmp set curtemp={} where manodeguid="{}";'.format(curtemp,nodeid)
+    return sqlstr
+
+
+# callback message processing section
+def processcurtemp(nodeid,msg):
+    # need to call decryption key for NODE ID in order to read payload
+    print("Current Temperature for MA-Node : {} is {}".format(nodeid,str(msg.payload)))
+    timestamp=datetime.datetime.now().isoformat()
+    recdict={'timestamp':timestamp,'manodeid':nodeid,'curtemp':str((msg.payload).decode("utf-8"))}
+    updatecurtemp('/opt/storage/logs/currenttemp.json',recdict)
+    return 
+
+def processdiagnotics(nodeid,msg):
+    # need to call decryption key for NODE ID in order to read payload
+    print("Diagnostics report from MA-Node : {} is {}".format(nodeid,str(msg.payload)))
+    updatediaglog('/opt/storage/logs/ma-node_diags.json',str((msg.payload).decode("utf-8")))
+    return 
+
+def updatecurtemp(logfile,recdict):
+    # Write to logfile
+    with open(logfile, 'a') as jsonfh:
+         json.dump(recdict,jsonfh)
+         jsonfh.write('\n')
+    # Write to database
+    nodevars=setvars()
+    dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
+    #confirm connection before generating SQL
+    if dbconnect:
+        newsql=newcurtempsql(recdict['manodeid'],recdict['curtemp'])
+        with dbconnect.cursor() as cursor:
+            cursor.execute(newsql)
+            dbconnect.commit()
+    return
+
+def updatediaglog(logfile,recjson):
+    with open(logfile, 'a') as jsonfh:
+         jsonfh.write(recjson)
+         jsonfh.write('\n')
+    return
+
+# set random temp for random MA-Nodes ( replace with SQL calls to settemp column)
 def newtemp():
     curtemp=str(round(random.uniform(10.00,35.00),2))
     return curtemp
@@ -88,6 +139,8 @@ def getnodeid():
     nodelist=['617985f7-4d40-4b26-9d79-b958fa5bd7c6','5ea489d1-9a6e-4718-a485-d35fd2e526ae','7273b5fe-be3a-4728-b365-567e86f10abc','1f94d059-f3d8-4ad0-b0a3-b12c8f025b60','72621444-8c8c-4cd0-869d-d86380fcdfa8']
     pick=random.randint(0,4)
     return nodelist[pick]
+
+
 
 def main():
     nodevars=setvars()
@@ -107,24 +160,15 @@ def main():
         while True: 
             print("go check database for new temperature over-rides")
             # if there is data there create a publishing client and push the data
-            pubclient =newclient(nodevars[0],nodevars[1],nodevars[2])
+            # for all nodeid/settemp results:
             settemp=newtemp()
             randnode=getnodeid()
             print("encrypt data using {} symetric key".format(randnode))
             print("Publishing new temperature for node {}".format(randnode))
-            mqpubstat=newconnect(pubclient,nodevars[3],nodevars[4])
-            if mqpubstat==0:
-                # for all temps to be set:
-                newtopicpub(pubclient,"st",randnode,settemp)
-                # once all are published disconnect
-                pubclient.disconnect()
-                # end of publish till more data set
+            newtopicpub(subclient,"st",randnode,settemp)
+            # once all are published disconnect
             time.sleep(30)
-
             pass
-
-
-
 
 
 if __name__=="__main__":
