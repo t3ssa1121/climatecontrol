@@ -31,7 +31,7 @@ def setvars():
     SETTEMP="/opt/storage/data/setnewtemp.csv"
     DBHOST="10.100.200.3"
     DBUSER="lpappuser"
-    DBPWD="changeme"
+    DBPWD="s0s0@PPcr3ds"
     DBINST="qtempapp"
     return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP,DBHOST,DBUSER,DBPWD,DBINST]
 
@@ -92,6 +92,9 @@ def newcurtempsql(nodeid,curtemp):
     sqlstr='update nodedatatmp set curtemp={} where manodeguid="{}";'.format(curtemp,nodeid)
     return sqlstr
 
+def newsettempsql():
+    sqlstr='select manodeguid,settemp from nodedatatmp where settemp IS NOT NULL;'
+    return sqlstr
 
 # callback message processing section
 def processcurtemp(nodeid,msg):
@@ -130,6 +133,16 @@ def updatediaglog(logfile,recjson):
          jsonfh.write('\n')
     return
 
+def getsettemp():
+    newsql=newsettempsql()
+    dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
+    if dbconnect:
+        with dbconnect.cursor() as cursor:
+            cursor.execute(newsql)
+            queryresults=cursor.fetchall()
+    return queryresults
+
+
 # set random temp for random MA-Nodes ( replace with SQL calls to settemp column)
 def newtemp():
     curtemp=str(round(random.uniform(10.00,35.00),2))
@@ -161,11 +174,15 @@ def main():
             print("go check database for new temperature over-rides")
             # if there is data there create a publishing client and push the data
             # for all nodeid/settemp results:
-            settemp=newtemp()
-            randnode=getnodeid()
-            print("encrypt data using {} symetric key".format(randnode))
-            print("Publishing new temperature for node {}".format(randnode))
-            newtopicpub(subclient,"st",randnode,settemp)
+            records=getsettemp()
+            for record in records:
+                manodeid,setval=record
+                #settemp=newtemp()
+                #randnode=getnodeid()
+                print("encrypt data using {} symetric key".format(manodeid))
+                #print("encrypt data using {} symetric key".format(randnode))
+                print("Publishing new temperature {} for node {}".format(str(setval),manodeid))
+                newtopicpub(subclient,"st",manodeid,str(setval))
             # once all are published disconnect
             time.sleep(30)
             pass
