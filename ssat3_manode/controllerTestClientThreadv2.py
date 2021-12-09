@@ -74,29 +74,53 @@ def newtopictreesub(mqclient,topic):
     mqclient.subscribe(topic)
     return
 
+def newtopicpub(mqclient,topic,nodeid,data):
+    topic='{}/{}'.format(topic,nodeid)
+    mqclient.publish(topic,data, qos=1,retain=True)
+    return
+
+# set random temp for random MA-Nodes
+def newtemp():
+    curtemp=str(round(random.uniform(10.00,35.00),2))
+    return curtemp
+
+def getnodeid():
+    nodelist=['617985f7-4d40-4b26-9d79-b958fa5bd7c6','5ea489d1-9a6e-4718-a485-d35fd2e526ae','7273b5fe-be3a-4728-b365-567e86f10abc','1f94d059-f3d8-4ad0-b0a3-b12c8f025b60','72621444-8c8c-4cd0-869d-d86380fcdfa8']
+    pick=random.randint(0,4)
+    return nodelist[pick]
 
 def main():
     nodevars=setvars()
     subclient=newclient(nodevars[0],nodevars[1],nodevars[2])
     subclient.on_message = on_message_write
-    #Subscribe to both current temp and diagnostics queues. 
-    # Function newtopictreesub uses a wild card to get all nodes publishing
-    # to the current temp queue using their MA-Node guid to differntiate sources
-    newtopictreesub(subclient,"ct")
-    newtopictreesub(subclient,"dd")
     # connect to the broker and validate before proceeding
     mqsubstat=newconnect(subclient,nodevars[3],nodevars[4])
     if mqsubstat== 0:
         print("successful connection to mqqt broker")
-        #Subscribe now
+        #Subscribe to both current temp and diagnostics queues. 
+        # Function newtopictreesub uses a wild card to get all nodes publishing
+        # to the current temp queue using their MA-Node guid to differntiate sources
         newtopictreesub(subclient,"ct")
         newtopictreesub(subclient,"dd")
         # Loop start puts queue subscription into a backgroun thread
         subclient.loop_start()
-        while True:
-            print("If I were a real publisher I could push some code")
+        while True: 
             print("go check database for new temperature over-rides")
+            # if there is data there create a publishing client and push the data
+            pubclient =newclient(nodevars[0],nodevars[1],nodevars[2])
+            settemp=newtemp()
+            randnode=getnodeid()
+            print("encrypt data using {} symetric key".format(randnode))
+            print("Publishing new temperature for node {}".format(randnode))
+            mqpubstat=newconnect(pubclient,nodevars[3],nodevars[4])
+            if mqpubstat==0:
+                # for all temps to be set:
+                newtopicpub(pubclient,"st",randnode,settemp)
+                # once all are published disconnect
+                pubclient.disconnect()
+                # end of publish till more data set
             time.sleep(30)
+
             pass
 
 
