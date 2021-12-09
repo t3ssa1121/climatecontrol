@@ -68,7 +68,7 @@ def getdbconnection(dbhost,dbuser,dbcred,dbinst):
         print(e)
 
 def newcurtempsql(nodeid,curtemp):
-    sqlstr='update nodedatatmp set curtemp={} where manodeguid={};'.format(nodeid,curtemp)
+    sqlstr='update nodedatatmp set curtemp={} where manodeguid="{}";'.format(curtemp,nodeid)
     return sqlstr
 
 def updatecurtemp(logfile,recdict):
