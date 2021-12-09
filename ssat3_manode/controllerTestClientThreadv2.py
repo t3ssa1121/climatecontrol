@@ -60,11 +60,11 @@ def on_message_write(mqclient, userdata, msg):
         print("UserData included: {}".format(userdata))
     result=tuple((msg.topic).split("/"))
     if result[0]=="ct":
-        print("Received current temp from {} : {}".format(result[1],str(msg.payload)))
-        #processcurtemp(result[1],msg)
+        #print("Received current temp from {} : {}".format(result[1],str(msg.payload)))
+        processcurtemp(result[1],msg)
     elif result[0]=="dd":
-        print("Received diagnostics from {} : {}".format(result[1],str(msg.payload)))
-        #processdiagnotics(result[1],msg)
+        #print("Received diagnostics from {} : {}".format(result[1],str(msg.payload)))
+        processdiagnotics(result[1],msg)
     else:
         print("warning undefined topic: {}".format(msg.topic))
         # write to security log       
