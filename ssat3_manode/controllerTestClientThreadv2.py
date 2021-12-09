@@ -78,6 +78,7 @@ def newtopictreesub(mqclient,topic):
 def main():
     nodevars=setvars()
     subclient=newclient(nodevars[0],nodevars[1],nodevars[2])
+    subclient.on_message = on_message_write
     #Subscribe to both current temp and diagnostics queues. 
     # Function newtopictreesub uses a wild card to get all nodes publishing
     # to the current temp queue using their MA-Node guid to differntiate sources
