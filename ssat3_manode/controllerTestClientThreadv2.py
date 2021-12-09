@@ -2,14 +2,17 @@
 #  Author(s): Doug Leece  
 #  Version Notes: 0, initial build  (Dec 8, 2021)
 #                   
-# Stripped down to get simple pub & sub in same script
+# #  using paho client https://www.eclipse.org/paho/index.php?page=clients/python/index.php
+#
+#  Test client reads all node ID and symetric key from file
+#  Initiates subscribing connections to current temperature & diagnositics topics
+#  MA-Node guids for a heirarchical structure with values associated with each MA-Node
 
 
 import  paho.mqtt.client as paho
 import json, sys, datetime,random,time, threading,csv
 from os import environ
 from os import path
-from multiprocessing import Process
 from mysql.connector import connect, Error
 
 def setvars():
@@ -28,7 +31,7 @@ def setvars():
     QPWD="changeme"
     QHOST="10.100.200.3"
     QPORT="1883"
-    SETTEMP="/opt/storage/data/setnewtemp.csv"
+    SETTEMP="/opt/storage/data/setnewtemp.csv"   # Don't need this but var order will change
     DBHOST="10.100.200.3"
     DBUSER="lpappuser"
     DBPWD="changeme"
@@ -142,8 +145,8 @@ def getsettemp(nodevars):
             queryresults=cursor.fetchall()
     return queryresults
 
-
-# set random temp for random MA-Nodes ( replace with SQL calls to settemp column)
+'''
+# set random temp for random MA-Nodes ( replaced with SQL calls to settemp column -clean up before )
 def newtemp():
     curtemp=str(round(random.uniform(10.00,35.00),2))
     return curtemp
@@ -152,7 +155,7 @@ def getnodeid():
     nodelist=['617985f7-4d40-4b26-9d79-b958fa5bd7c6','5ea489d1-9a6e-4718-a485-d35fd2e526ae','7273b5fe-be3a-4728-b365-567e86f10abc','1f94d059-f3d8-4ad0-b0a3-b12c8f025b60','72621444-8c8c-4cd0-869d-d86380fcdfa8']
     pick=random.randint(0,4)
     return nodelist[pick]
-
+'''
 
 
 def main():
@@ -177,13 +180,12 @@ def main():
             records=getsettemp(nodevars)
             for record in records:
                 manodeid,setval=record
-                #settemp=newtemp()
-                #randnode=getnodeid()
+                # 
                 print("encrypt data using {} symetric key".format(manodeid))
-                #print("encrypt data using {} symetric key".format(randnode))
+                # next functions to be built
                 print("Publishing new temperature {} for node {}".format(str(setval),manodeid))
                 newtopicpub(subclient,"st",manodeid,str(setval))
-            # once all are published disconnect
+            
             time.sleep(30)
             pass
 
