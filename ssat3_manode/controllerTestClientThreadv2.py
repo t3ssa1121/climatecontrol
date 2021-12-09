@@ -31,7 +31,7 @@ def setvars():
     SETTEMP="/opt/storage/data/setnewtemp.csv"
     DBHOST="10.100.200.3"
     DBUSER="lpappuser"
-    DBPWD="s0s0@PPcr3ds"
+    DBPWD="changeme"
     DBINST="qtempapp"
     return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP,DBHOST,DBUSER,DBPWD,DBINST]
 
@@ -133,7 +133,7 @@ def updatediaglog(logfile,recjson):
          jsonfh.write('\n')
     return
 
-def getsettemp():
+def getsettemp(nodevars):
     newsql=newsettempsql()
     dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
     if dbconnect:
@@ -174,7 +174,7 @@ def main():
             print("go check database for new temperature over-rides")
             # if there is data there create a publishing client and push the data
             # for all nodeid/settemp results:
-            records=getsettemp()
+            records=getsettemp(nodevars)
             for record in records:
                 manodeid,setval=record
                 #settemp=newtemp()
