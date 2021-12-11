@@ -190,7 +190,7 @@ def main():
     
     cool=False
     heat=False
-    newtemp=float(19.123)  # ToDo,  need a way to read message queue for correct value, MID not enough
+    #newtemp=float(19.123)  # ToDo,  need a way to read message queue for correct value, MID not enough
     #
     while True:
         # check for new temperature
@@ -205,8 +205,8 @@ def main():
             if subresult[0]==0 and subresult[1]!=0:
                 print("new message on set temp queue")
                 time.sleep(2)
-                if newtemp == 19.123:
-                    print("no temp set case to be handled")
+                #if newtemp == 19.123:
+                #    print("no temp set case to be handled")
                 hclist=cu.testnewtemp(newtemp,tempsensor1)
                 print(hclist)
                 #hclist=testnewtemp(newtemp,tempsensor1)
