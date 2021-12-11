@@ -99,9 +99,9 @@ def testnewtemp(st,tsensor):
         heat=False
         cool=False
 
-    elif  st < round((ct + 0.5 ),2):
+    elif  st < round((ct + 0.42 ),2):
         # cool by 0.3 degrees in this loop
-        tsensor.settemp(-0.3)
+        tsensor.settemp(-0.27)
         tsensor.settargettemp(st)
         heat=False
         cool=True
@@ -114,9 +114,9 @@ def testnewtemp(st,tsensor):
         heat=False
         cool=False
 
-    elif st > round((ct - 0.5),2):
+    elif st > round((ct - 0.58),2):
         # heat by 0.3 degrees in this loop
-        tsensor.settemp(0.3)
+        tsensor.settemp(0.33)
         tsensor.settargettemp(st)
         heat=True
         cool=False
