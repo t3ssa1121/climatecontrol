@@ -92,7 +92,7 @@ def procsettemp(msg):
 # Climate control temperature assessment
 def testnewtemp(st,tsensor):
     # get current temperature
-    ct=tsensor.getemp()
+    ct=tsensor.gettemp()[1]
     # compare set temp value with current temp
     if st > (ct + 1.5):
         # cool by 0.2 degrees in this loop
@@ -110,7 +110,7 @@ def testnewtemp(st,tsensor):
         #Ensure heating & cooling off
         cool=False
         heat=False
-        return [heat,cool]
+    return [heat,cool]
 
 def sethcstatus(hclist):
     if hclist[0]:
