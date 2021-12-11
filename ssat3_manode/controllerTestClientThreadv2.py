@@ -171,7 +171,7 @@ def main():
         # to the current temp queue using their MA-Node guid to differntiate sources
         newtopictreesub(subclient,"ct")
         newtopictreesub(subclient,"dd")
-        # Loop start puts queue subscription into a backgroun thread
+        # Loop start puts queue subscription into a background thread
         subclient.loop_start()
         while True: 
             print("go check database for new temperature over-rides")
