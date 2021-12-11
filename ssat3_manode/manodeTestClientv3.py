@@ -53,6 +53,7 @@ def newconnect(mqclient,mqhost,mqport):
 
 def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
+    print("publishing {} to {}".format(data,topic))
     mqclient.publish(topic,data, qos=1,retain=True)
     return
 
