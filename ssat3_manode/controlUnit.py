@@ -90,13 +90,13 @@ def testnewtemp(st,tsensor):
         heat=False
         cool=False
  
-    elif st > round((ct + 0.5),2):
+    elif st > round((ct - 0.5),2):
         # heat by 0.3 degrees in this loop
         tsensor.settemp(0.3)
         heat=True
         cool=False
     # leave heating & cooling off if less than 1 degree in the difference
-    elif st <= round((ct + 0.25),2) and st >= round((ct - 0.25),2):
+    elif st >= round((ct + 0.25),2) and st <= round((ct - 0.25),2):
         # decrease heat slightly to simulate loss of heat 
         tsensor.settemp(-0.1)
         heat=False
