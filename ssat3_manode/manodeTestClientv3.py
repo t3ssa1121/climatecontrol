@@ -208,9 +208,10 @@ def main():
                 if newtemp == 19.123:
                     print("no temp set case to be handled")
                 hclist=cu.testnewtemp(newtemp,tempsensor1)
+                print(hclist)
                 #hclist=testnewtemp(newtemp,tempsensor1)
                 #sethcstatus[hclist]
-                cu.sethcstatus[hclist]
+                #cu.sethcstatus[hclist]
             else:
             # by default cool by 0.1 degrees
                 tempsensor1.settemp(-0.1)
@@ -218,7 +219,8 @@ def main():
                 heat=False
                 cool=False
                 hclist=[heat,cool]
-                cu.sethcstatus[hclist]
+                print(hclist)
+                #cu.sethcstatus[hclist]
         # Stop & disconnect allows disconnected mode
         subclient.loop_stop()
         subclient.disconnect()
