@@ -58,9 +58,9 @@ def newtopicpub(mqclient,topic,nodeid,data):
 
 def newtopicsub(mqclient,topic,nodeid):
         topic='{}/{}'.format(topic,nodeid)
-        mqclient.subscribe(topic)
+        substat=mqclient.subscribe(topic)
         # What do we get back on client subscribe?
-        return
+        return substat
 
 def on_message_update(mqclient, userdata, msg):
     # when message is recieved on a queue that is subscribed to this callback event fires
@@ -196,7 +196,7 @@ def main():
             subclient.loop_start()
             # check for new temperature setting on "st" message queue
             print("checking st/{} queue for new temperature".format(nodevars[1]))
-            subresult=newtopictreesub(subclient,"st",nodevars[1])
+            subresult=newtopicsub(subclient,"st",nodevars[1])
             if subresult[0]==0 and subresult[1]!=0:
                 print("new message on set temp queue")
                 hclist=testnewtemp(newtemp,tempsensor1)
