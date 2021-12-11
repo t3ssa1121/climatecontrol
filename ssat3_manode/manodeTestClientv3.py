@@ -18,7 +18,8 @@
 import  paho.mqtt.client as paho
 import json, sys, datetime,random,time
 from os import environ, path
-#from dotenv import load_dotenv
+# import custom modules
+import controlUnit as cu
 
 
 def setvars():
@@ -182,9 +183,11 @@ def main():
     # Diagnositcs loop control
     monitorcycle=0
     # Instantiate digital thermometer simulation
-    tempsensor1 = TempSensor('MA-Node_0')
+    #tempsensor1 = TempSensor('MA-Node_0')
+    tempsensor1 = cu.TempSensor("MA-Node_lab")
     # get curent temperature in controlled zone and set heating/cooling to off
     tempdata=tempsensor1.gettemp()
+    
     cool=False
     heat=False
     #
@@ -226,7 +229,8 @@ def main():
                 monitorcycle+=1
                 # every 15-20 minutes collect diagnostics and publish them (change to 20 for prod )
                 if monitorcycle >= 12:
-                    diagdata=newdiag(nodevars[1],comfailurecount)
+                    #diagdata=newdiag(nodevars[1],comfailurecount)
+                    diagdata=cu.newdiag(nodevars[1],comfailurecount)
                     newtopicpub(pubclient,"dd",nodevars[1],diagdata)
                     monitorcycle=0
             pubclient.disconnect()
