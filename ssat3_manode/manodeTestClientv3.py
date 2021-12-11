@@ -94,12 +94,12 @@ def testnewtemp(st,tsensor):
     # get current temperature
     ct=tsensor.gettemp()[1]
     # compare set temp value with current temp
-    if st > (ct + 1.5):
+    if st < (ct + 1.5):
         # cool by 0.2 degrees in this loop
         tsensor.settemp(-0.2)
-        cool=True
         heat=False
-    elif st< (ct - 1.5):
+        cool=True
+    elif st> (ct - 1.5):
         # heat by 0.2 degrees in this loop
         tsensor.settemp(0.2)
         heat=True
@@ -176,7 +176,7 @@ def main():
     nodevars=setvars()
     
     # communication failure mitigations
-    #comfailurecount=0
+    comfailurecount=0
     #extendedcomfailure=False
     # Diagnositcs loop control
     monitorcycle=0
@@ -199,8 +199,9 @@ def main():
             subresult=newtopicsub(subclient,"st",nodevars[1])
             if subresult[0]==0 and subresult[1]!=0:
                 print("new message on set temp queue")
+                time.sleep(2)
                 hclist=testnewtemp(newtemp,tempsensor1)
-                sethcstatus[hclist]
+                #sethcstatus[hclist]
             else:
             # by default cool by 0.1 degrees
                 tempsensor1.settemp(-0.1)
@@ -208,7 +209,7 @@ def main():
                 heat=False
                 cool=False
                 hclist=[heat,cool]
-                sethcstatus[hclist]
+                #sethcstatus[hclist]
         # Stop & disconnect allows disconnected mode
         subclient.loop_stop()
         subclient.disconnect()
