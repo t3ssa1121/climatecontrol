@@ -224,14 +224,18 @@ def main():
             if mqconstat == 0:
                 newtopicpub(pubclient,"ct",nodevars[1],tempdata[1])
                 monitorcycle+=1
-                # every 15-20 minutes collect diagnostics and publish them (change to 20 for prod )
-                if monitorcycle >= 12:
-                    #diagdata=newdiag(nodevars[1],comfailurecount)
-                    diagdata=cu.newdiag(nodevars[1],comfailurecount)
-                    newtopicpub(pubclient,"dd",nodevars[1],diagdata)
-                    monitorcycle=0
-            pubclient.disconnect()
-        time.sleep(random.randint(35,48))
+                pubclient.disconnect()
+            # every 15-20 minutes collect diagnostics and publish them (change to 20 for prod )
+        if monitorcycle >= 12:
+            diagdata=cu.newdiag(nodevars[1],comfailurecount)
+            pubclient=newclient(nodevars[1],nodevars[2],nodevars[3])
+            mqconstat=newconnect(pubclient,nodevars[4],nodevars[5])
+            if mqconstat == 0:
+                newtopicpub(pubclient,"dd",nodevars[1],diagdata)
+                pubclient.disconnect()
+            monitorcycle=0
+            
+        time.sleep(random.randint(15,18))
         '''
         # Retry communications several times since network outages ofen only last minutes
         elif not extendedcomfailure:
