@@ -93,8 +93,8 @@ def testnewtemp(st,tsensor):
     # leave heating & cooling off if difference is within ~ .5 of a degree
  
     if (st >= round((ct - 0.25),2)) and (st <= round((ct + 0.25 ),2)) :
-        # increase heat slightly to simulate loss of cooling
-        tsensor.settemp(0.1)
+        # increase heat slightly to simulate loss of cooling, 
+        tsensor.settemp(-0.1)
         tsensor.settargettemp(st)
         heat=False
         cool=False
@@ -138,7 +138,6 @@ def testnewtemp(st,tsensor):
 # Function to read the current on/off state for both the heating and cooling actuators
 # and direct that change to the actuator code itself
 def sethcstatus(hclist):
-    print(hclist)
     if hclist[0]:
         callforheat(True)
     else:
