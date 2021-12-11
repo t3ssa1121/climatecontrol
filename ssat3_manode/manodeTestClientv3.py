@@ -18,9 +18,6 @@
 import  paho.mqtt.client as paho
 import json, sys, datetime,random,time
 from os import environ, path
-from ssat3_manode.controllerTestClientThreadv2 import newtopictreesub
-
-from ssat3_manode.manodeTestClientv2 import newtemp
 #from dotenv import load_dotenv
 
 
