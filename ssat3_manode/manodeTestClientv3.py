@@ -220,7 +220,7 @@ def main():
         if monitorcycle%3 == 0:
             tempdata=tempsensor1.gettemp()
             pubclient=newclient(nodevars[1],nodevars[2],nodevars[3])
-            mqconstat=newconnect(subclient,nodevars[4],nodevars[5])
+            mqconstat=newconnect(pubclient,nodevars[4],nodevars[5])
             if mqconstat == 0:
                 newtopicpub(pubclient,"ct",nodevars[1],tempdata[1])
                 monitorcycle+=1
