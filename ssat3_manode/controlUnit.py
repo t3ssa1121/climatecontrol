@@ -43,11 +43,19 @@ class TempSensor:
         # accepts positive or negative floating value to simulate cooling or heating
         self.curtemp = self.curtemp + float(tempchange)
         # debug
-        print("temperature changed to {}".format(self.curtemp))
+        print("temperature changing to {}".format(self.curtemp))
+        
     
     def gettemp(self):
         # naming the instance allows easier tracking of multiple temp sensors
         return[self.name,self.curtemp]
+    # Safety setting to handle invalid inputs and use last known good value
+    def settargettemp(self,validtemp):
+        self.targettemp = round(validtemp,2)
+    
+    def gettargettemp(self):
+        return self.targettemp
+
 
 
 # Function to request new diagnostic data. Requires the ID of the MA-Node so a central monitoring
@@ -73,21 +81,28 @@ def newdiag(nodeid,comstats):
 # allowing for modest heat loss or gain over time and avoiding the constant turning
 # heating or cooling on and off. 
 def testnewtemp(st,tsensor):
+    #testing for invalid temperature input
+    if not checksafety(st):
+        print("Temperature setting {} exceeds saftey limits,no changes made".format(st))
+        st=tsensor.gettargettemp()
+
     # get current temperature
     ct=tsensor.gettemp()[1]
     print(ct)
     # compare set temp value with current temp
     # leave heating & cooling off if difference is within ~ .5 of a degree
-     
+ 
     if (st >= round((ct - 0.25),2)) and (st <= round((ct + 0.25 ),2)) :
         # increase heat slightly to simulate loss of cooling
         tsensor.settemp(0.1)
+        tsensor.settargettemp(st)
         heat=False
         cool=False
 
     elif  st < round((ct + 0.5 ),2):
         # cool by 0.3 degrees in this loop
         tsensor.settemp(-0.3)
+        tsensor.settargettemp(st)
         heat=False
         cool=True
 
@@ -95,18 +110,21 @@ def testnewtemp(st,tsensor):
     elif st >= round((ct + 0.25),2) and st <= round((ct - 0.25),2):
         # decrease heat slightly to simulate loss of heat 
         tsensor.settemp(-0.1)
+        tsensor.settargettemp(st)
         heat=False
         cool=False
 
     elif st > round((ct - 0.5),2):
         # heat by 0.3 degrees in this loop
         tsensor.settemp(0.3)
+        tsensor.settargettemp(st)
         heat=True
         cool=False
     
     else:
         # by default cool by 0.1 degrees
         tsensor.settemp(-0.1)
+        tsensor.settargettemp(st)
         #Ensure heating & cooling off
         cool=False
         heat=False
@@ -141,3 +159,10 @@ def callforcool(state):
             print("Cooling Status: Active")
         else:
             print("Cooling Status: Inactive")
+
+
+def checksafety(tempval):
+    if tempval > tempmin and tempval < tempmax:
+        return True
+    else:
+        return False
