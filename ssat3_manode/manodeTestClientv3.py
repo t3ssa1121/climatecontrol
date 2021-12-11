@@ -90,7 +90,7 @@ def procsettemp(msg):
         print("Invalid payload")
         print(e)
         return
-
+'''
 # Climate control temperature assessment
 def testnewtemp(st,tsensor):
     # get current temperature
@@ -171,27 +171,23 @@ class TempSensor:
     def gettemp(self):
         # naming the instance allows easier tracking of multiple temp sensors
         return[self.name,self.curtemp]
-
+'''
 
 
 def main():
     nodevars=setvars()
-    
     # communication failure mitigations
     comfailurecount=0
     #extendedcomfailure=False
     # Diagnositcs loop control
     monitorcycle=0
     # Instantiate digital thermometer simulation
-    #tempsensor1 = TempSensor('MA-Node_0')
     tempsensor1 = cu.TempSensor("MA-Node_lab")
     # get curent temperature in controlled zone and set heating/cooling to off
     tempdata=tempsensor1.gettemp()
-    
     cool=False
     heat=False
-    #newtemp=float(19.123)  # ToDo,  need a way to read message queue for correct value, MID not enough
-    #
+    
     while True:
         # check for new temperature
         subclient=newclient(nodevars[1],nodevars[2],nodevars[3])
@@ -205,14 +201,8 @@ def main():
             if subresult[0]==0 and subresult[1]!=0:
                 print("new message on set temp queue")
                 time.sleep(2)
-                #if newtemp == 19.123:
-                #    print("no temp set case to be handled")
                 hclist=cu.testnewtemp(newtemp,tempsensor1)
-                print(hclist)
-                print(type(hclist))
-                #hclist=testnewtemp(newtemp,tempsensor1)
-                #sethcstatus[hclist]
-                #cu.sethcstatus[hclist]
+                cu.sethcstatus(hclist)
             else:
             # by default cool by 0.1 degrees
                 tempsensor1.settemp(-0.1)
@@ -220,9 +210,7 @@ def main():
                 heat=False
                 cool=False
                 hclist=[heat,cool]
-                print(hclist)
-                print(type(hclist))
-                #cu.sethcstatus[hclist]
+                cu.sethcstatus(hclist)
         # Stop & disconnect allows disconnected mode
         subclient.loop_stop()
         subclient.disconnect()
@@ -272,9 +260,6 @@ def main():
             print("Contact 1-800-noqtemp to report outage")
             time.sleep(600)
             '''
-
-    
-
 
 if __name__=="__main__":
     main()

@@ -41,7 +41,7 @@ class TempSensor:
 
     def settemp(self,tempchange):
         # accepts positive or negative floating value to simulate cooling or heating
-        self.curtemp = self.curtemp + float(tempchange)
+        self.curtemp = round((self.curtemp + float(tempchange)),2)
         # debug
         print("temperature changing to {}".format(self.curtemp))
         
@@ -101,7 +101,7 @@ def testnewtemp(st,tsensor):
 
     elif  st < round((ct + 0.49 ),2):
         # cool by ~0.3 degrees in this loop
-        rtemp=round((random.uniform(0.01,0.06) - 0.30),2)
+        rtemp=(random.uniform(0.01,0.06) - 0.30)
         tsensor.settemp(rtemp)
         tsensor.settargettemp(st)
         heat=False
@@ -110,7 +110,7 @@ def testnewtemp(st,tsensor):
     # leave heating & cooling off if less than 1 degree in the difference
     elif st >= round((ct + 0.25),2) and st <= round((ct - 0.25),2):
         # decrease heat slightly to simulate loss of heat
-        rtemp=round((random.uniform(0.01,0.06) -0.15),2) 
+        rtemp=(random.uniform(0.01,0.06) -0.15)
         tsensor.settemp(rtemp)
         tsensor.settargettemp(st)
         heat=False
@@ -118,7 +118,7 @@ def testnewtemp(st,tsensor):
 
     elif st > round((ct - 0.51),2):
         # heat by ~0.3 degrees in this loop
-        rtemp=round((random.uniform(0.01,0.06) + 0.30),2)
+        rtemp=(random.uniform(0.01,0.06) + 0.30)
         tsensor.settemp(rtemp)
         tsensor.settargettemp(st)
         heat=True
@@ -126,7 +126,7 @@ def testnewtemp(st,tsensor):
     
     else:
         # by default cool by ~0.125 degrees
-        rtemp=round((random.uniform(0.01,0.06) -0.15),2)
+        rtemp=(random.uniform(0.01,0.06) -0.15)
         tsensor.settemp(rtemp)
         tsensor.settargettemp(st)
         #Ensure heating & cooling off
@@ -139,16 +139,14 @@ def testnewtemp(st,tsensor):
 # and direct that change to the actuator code itself
 def sethcstatus(hclist):
     print(hclist)
-    '''
     if hclist[0]:
         callforheat(True)
     else:
-        callforcool(False)
+        callforheat(False)
     if hclist[1]:
         callforcool(True)
     else:
         callforcool(False)
-    '''
     return
 
 # Climate Control Equipment Actuators, simulating the physical IO change logic via print statement
