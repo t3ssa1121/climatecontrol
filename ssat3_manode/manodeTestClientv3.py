@@ -204,8 +204,13 @@ def main():
             if subresult[0]==0 and subresult[1]!=0:
                 print("new message on set temp queue")
                 time.sleep(2)
-                hclist=testnewtemp(newtemp,tempsensor1)
+                if newtemp is None:
+                    print("no temp set case to be handled")
+                    newtemp=float(19.0)
+                hclist=cu.testnewtemp(newtemp,tempsensor1)
+                #hclist=testnewtemp(newtemp,tempsensor1)
                 #sethcstatus[hclist]
+                cu.sethcstatus[hclist]
             else:
             # by default cool by 0.1 degrees
                 tempsensor1.settemp(-0.1)
@@ -213,7 +218,7 @@ def main():
                 heat=False
                 cool=False
                 hclist=[heat,cool]
-                #sethcstatus[hclist]
+                cu.sethcstatus[hclist]
         # Stop & disconnect allows disconnected mode
         subclient.loop_stop()
         subclient.disconnect()

@@ -68,4 +68,71 @@ def newdiag(nodeid,comstats):
     diagdatajson = json.dumps(diagdata)
     return diagdatajson
 
+# Climate control temperature assessment function needs to have additional logic
+# to provide a small bit of extra cooling or heating beyond the set temperature 
+# allowing for modest heat loss or gain over time and avoiding the constant turning
+# heating or cooling on and off. 
+def testnewtemp(st,tsensor):
+    # get current temperature
+    ct=tsensor.gettemp()[1]
+    # Add one
+    # compare set temp value with current temp
+    if st < round((ct + 1.0),2):
+        # cool by 0.3 degrees in this loop
+        tsensor.settemp(-0.3)
+        heat=False
+        cool=True
+    # leave heating & cooling off if difference is within ~ .5 of a degree
+    elif st <= round((ct - 0.25),2):
+        # increase heat slightly to simulate loss of cooling
+        tsensor.settemp(0.1)
+        heat=False
+        cool=False
+    elif st > round((ct - 1.0),2):
+        # heat by 0.3 degrees in this loop
+        tsensor.settemp(0.3)
+        heat=True
+        cool=False
+    # leave heating & cooling off if less than 1 degree in the difference
+    elif st >= round((ct + 0.25),2):
+        # decrease heat slightly to simulate loss of heat 
+        tsensor.settemp(-0.1)
+        heat=True
+        cool=False
+    else:
+        # by default cool by 0.1 degrees
+        tsensor.settemp(-0.1)
+        #Ensure heating & cooling off
+        cool=False
+        heat=False
+    return [heat,cool]
 
+
+# Function to read the current on/off state for both the heating and cooling actuators
+# and direct that change to the actuator code itself
+def sethcstatus(hclist):
+    print(hclist)
+    '''
+    if hclist[0]:
+        callforheat(True)
+    else:
+        callforcool(False)
+    if hclist[1]:
+        callforcool(True)
+    else:
+        callforcool(False)
+    '''
+    return
+
+# Climate Control Equipment Actuators, simulating the physical IO change logic via print statement
+def callforheat(state):
+        if state:
+            print("Heating Status: Active")
+        else:
+            print("Heating Status: Inactive")
+
+def callforcool(state):
+        if state:
+            print("Cooling Status: Active")
+        else:
+            print("Cooling Status: Inactive")
