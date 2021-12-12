@@ -178,15 +178,17 @@ def main():
             records=adb.getsettemp()
             for record in records:
                 manodeid,setval=record
-                thiskey=getenckey(manodeid,thiskeydict)
-                print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
-                enc_str=enc_settemp(setval,thiskey)
-                print("Publishing new temperature {} for node {}\n encrypted as {}".format(setval,manodeid,enc_str))
-                newtopicpub(subclient,"encst",manodeid,enc_str)
+                if tesstsetval(setval,sotempmin,sotempmax):
+                    thiskey=getenckey(manodeid,thiskeydict)
+                    print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
+                    enc_str=enc_settemp(setval,thiskey)
+                    print("Publishing new temperature {} for node {}\n encrypted as {}".format(setval,manodeid,enc_str))
+                    newtopicpub(subclient,"encst",manodeid,enc_str)
+                else:
+                    print("Set Temperature value {} is outside authorized minium and maximum settings")
             
             time.sleep(30)
             pass
-
 
 if __name__=="__main__":
     main()
