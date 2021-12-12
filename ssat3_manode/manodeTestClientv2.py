@@ -2,7 +2,8 @@
 #  Author(s): Doug Leece  
 #  Version Notes: 0, initial build
 #                 1, built out data generation functions and queue publishing.
-#                    removing load env, need to instantiate using docker run arg  
+#                    removing load env, need to instantiate using docker run arg
+#                 2, adding retain to leave the messages on the queue  
 # 
 #  using paho client https://www.eclipse.org/paho/index.php?page=clients/python/index.php
 #
@@ -57,7 +58,7 @@ def on_connect(client,userdata,flags,rc):
 
 def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
-    mqclient.publish(topic,data)
+    mqclient.publish(topic,data, qos=1,retain=True)
     return
 
 def newtemp():
