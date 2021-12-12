@@ -142,7 +142,7 @@ def getenckey(nodeid,keydict):
 
 # Function to encrypt the node specific set temperature value with the node's symmetric key
 def enc_settemp(tempfloat,key):
-    tempbytes=bytes(str(tempfloat))
+    tempbytes=bytes(str(tempfloat),'utf-8')
     print(tempbytes)
     print(type(tempbytes))
     return
