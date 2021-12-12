@@ -2,27 +2,67 @@
 #  Author(s): Doug Leece 
 
 import  paho.mqtt.client as paho
+from cryptography.fernet import Fernet
 import json, sys, datetime,random,time
 
-settempval='' # Use to track set temp values received and properly decrypted
+# vars for functions
+skey128="lDiXfxjF3Ok4CpBmswBjV2rbI5LqQyJzBqJqHCWEAXs="   # this is pulled from ENV on startup normally
+settempval=None # Use to track set temp values received and properly decrypted
 
+
+# This function is a custom callback created to monitor the queue used for setting new 
+# temperatures for a given node. Symetric encryption is used to provide non-repudiation 
+# and data privacy. There is limited privacy impact with the disclosure of temperature information
+# but the requirement to decrypt message prevents the MA-Node from processing a message that was
+# not encrypted by the controller, a strong prevention against replay attacks, injection attacks 
+# and so forth .
 def on_msg_dcrypt(client,userdata,msg):
     result=tuple((msg.topic).split("/"))
-    # only attempt decryption on messages which likely contain encrypted data
+    # only attempt decryption on messages submitted to the encrypted ST queue which likely contain encrypted data
     if result[0]=="enctst":
         print('decrypt me: {}'.format(str(msg.payload)))
         print(type(msg.payload))
         if isinstance(msg.payload,bytes):
-            print('if message valid update global variable tracking temperature to be set')
+            print('Validate message content using decryption, if message valid update global variable tracking temperature to be set')
             bytedata=msg.payload
             print(str(bytedata))
-            '''
-            # on success
-            global settempval
-            settempval = decryptedval
-            # else 
-            settempval=None
-            '''
+            # This function attempts to decrypt the payload data with the MA-Node symetric key
+            # Function returns a byte array if decryption is successful or "None" which will
+            # over-ride the global variable used to set temperatues on the actuator node.
+            decpayload=decrypt_data(skey128,bytedata)
+            if decpayload:
+                try:
+                    # if the correct key was used the data should be a valid byte array
+                    # that can be converted to a float
+                    decval=float(decpayload)
+                    global settempval
+                    settempval = decval
+                except Exception as e:
+                    print("Decryption error, terminate input processing")
+                    global settempval
+                    settempval = None
+                    pass
+            else:
+                global settempval
+                settempval = None
+
+
+def decrypt_data(keystr,data):
+    bytekey=bytes(keystr,'utf-8')
+    enchandle=Fernet(bytekey)
+    try:
+        decbytes=enchandle.decrypt(data)
+        return decbytes
+    except Exception as e:
+        print("Payload not encrypted with authorized key")
+        pass
+        return None
+
+def encrypt_data(keystr,data):
+    bytekey=bytes(keystr,'utf-8')
+    enchandle=Fernet(bytekey)
+    encbytes=enchandle.encrypt(data)
+    return encbytes
 
 
 
