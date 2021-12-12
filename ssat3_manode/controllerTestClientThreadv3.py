@@ -2,11 +2,27 @@
 #  Author(s): Doug Leece  
 #  Version Notes: 0, initial build  (Dec 8, 2021)
 #                   
-# #  using paho client https://www.eclipse.org/paho/index.php?page=clients/python/index.php
+#  Using the python paho client https://www.eclipse.org/paho/index.php?page=clients/python/index.php to
+#  limit the amount of additional software to be installed on the microservice container.
 #
-#  Test client reads all node ID and symetric key from file
-#  Initiates subscribing connections to current temperature & diagnositics topics
-#  MA-Node guids for a heirarchical structure with values associated with each MA-Node
+#  On startup the conntroller program will read node ID and symetric key values from file and
+#  store this in an in memory dictionary. In a more resilent production system this ID and encryption
+#  key date would be retrieved from a key management service avaliable from the cloud providerThis will eliminate the accidental exposure of 
+#  key values in a code repository EG https://www.vaultproject.io/.
+#
+#  During operation the controller subscribes to the top level current temperature & diagnositics topics,
+#  using MA-Node GUID based sub topics to ensure the correct database records are updated.
+#  
+#  On frequent intervals, (currently 30 seconds but configurable in the code), the controller retrieves
+#  all user set temperature changes from a database, encrypts with the node's specific symetric key,
+#  and publishes this encrypted payload to the specific set temperature topic used by that MA-Node.
+#  The MA-Node will only initiate temperature changes for messages that can be properly decrypted, providing
+#  a very high degree of assurance that the change instruction came from the authorized controller and not
+#  an MQTT message forged and submitted by an adversary.
+#   
+#  Note: Encrypting current temperature values reported by the nodes is a secondary priority
+#  since there is no ability to change MA-Node operations from this data and it would 
+#  not typically be considered private data. This functionality is currently not implemented.
 
 
 import  paho.mqtt.client as paho
@@ -23,22 +39,18 @@ def setvars():
     #QPWD=environ.get('QPWD')
     #QHOST=environ.get('QHOST')
     #QPORT=environ.get('QPORT')
-    #DBHOST=environ.get('DBHOST')
-    #DBUSER=environ.get('DBUSER')
-    #DBPWD=environ.get('DBPWD')
-    #DBINST=environ.get('DBINST')
     # temp standalone testing
     CLIENTID='123456'
     QID="nodetester"
     QPWD="changeme"
     QHOST="10.100.200.3"
     QPORT="1883"
-    SETTEMP="/opt/storage/data/setnewtemp.csv"   # Don't need this but var order will change
-    DBHOST="10.100.200.3"
-    DBUSER="lpappuser"
-    DBPWD="changeme"
-    DBINST="qtempapp"
-    return[CLIENTID,QID,QPWD,QHOST,QPORT,SETTEMP,DBHOST,DBUSER,DBPWD,DBINST]
+    #SETTEMP="/opt/storage/data/setnewtemp.csv"   # Don't need this but var order will change
+    #DBHOST="10.100.200.3"
+    #DBUSER="lpappuser"
+    #DBPWD="changeme"
+    #DBINST="qtempapp"
+    return[CLIENTID,QID,QPWD,QHOST,QPORT]
 
 # MQTT client functions 
 # configure client connection so it is uniquely identified and also has a username and password applied
@@ -89,7 +101,7 @@ def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
     mqclient.publish(topic,data, qos=1,retain=True)
     return
-
+'''
 # database section
 def getdbconnection(dbhost,dbuser,dbcred,dbinst):
     try:
@@ -114,7 +126,7 @@ def getsettemp(nodevars):
             cursor.execute(newsql)
             queryresults=cursor.fetchall()
     return queryresults
-
+'''
 # callback message processing section
 def processcurtemp(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
