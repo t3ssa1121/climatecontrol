@@ -91,7 +91,6 @@ def main():
 
 
     while True:
-        settempval=None  #reset through each iteration to ensure an empty queue doesn't affect operation
         subclient=newclient('000lab23','nodetester','changeme')
         # specifies exact queue to be monitoring
         subclient.message_callback_add('enctst/000lab23',on_msg_dcrypt)
@@ -109,6 +108,8 @@ def main():
                     print("get last known good temp and submit that")
             subclient.loop_stop()
             subclient.disconnect()
+            global settempval
+            settempval=None  #reset through each iteration to ensure an empty queue doesn't affect operation
         time.sleep(30)
 
 if __name__=="__main__":
