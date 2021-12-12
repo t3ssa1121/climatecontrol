@@ -185,7 +185,7 @@ def main():
                     print("Publishing new temperature {} for node {}\n encrypted as {}".format(setval,manodeid,enc_str))
                     newtopicpub(subclient,"encst",manodeid,enc_str)
                 else:
-                    print("Set Temperature value {} is outside authorized minium and maximum settings")
+                    print("Set Temperature value {} is outside authorized minium and maximum settings for node {}".format(setval,manodeid))
             
             time.sleep(30)
             pass
