@@ -49,6 +49,19 @@ def getsettemp():
             queryresults=cursor.fetchall()
     return queryresults
 
+def updatecurtemprecords(recdict):
+    dbconnect=getdbconnection(DBHOST,DBUSER,DBPWD,DBINST)
+    #confirm connection before generating SQL
+    if dbconnect:
+        newsql=newcurtempsql(recdict['manodeid'],recdict['curtemp'])
+        with dbconnect.cursor() as cursor:
+            cursor.execute(newsql)
+            dbconnect.commit()
+    # to do, check for successful updates. Out of scope due to time contraints, 
+    # set temperature changes from users are prioritized over monitoring via web app
+    return
+
+
 # Application specific SQL
 def newcurtempsql(nodeid,curtemp):
     sqlstr='update nodedatatmp set curtemp={} where manodeguid="{}";'.format(curtemp,nodeid)

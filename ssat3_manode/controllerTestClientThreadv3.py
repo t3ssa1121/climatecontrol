@@ -136,6 +136,8 @@ def updatecurtemp(logfile,recdict):
          json.dump(recdict,jsonfh)
          jsonfh.write('\n')
     # Write to database
+    adb.updatecurtemprecords(recdict)
+    '''
     nodevars=setvars()
     dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
     #confirm connection before generating SQL
@@ -144,6 +146,7 @@ def updatecurtemp(logfile,recdict):
         with dbconnect.cursor() as cursor:
             cursor.execute(newsql)
             dbconnect.commit()
+    '''
     return
 
 def updatediaglog(logfile,recjson):
