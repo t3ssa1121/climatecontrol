@@ -24,7 +24,7 @@ from cryptography.fernet import Fernet
 import controlUnit as cu
 # Global variables
 settempval=None # Use to track set temp values received and properly decrypted
-
+SECRET_KEY='xB0O3-6KbNrPaLFJGBr2Rdpm9rVVz8K7trDVk-h6cQs='
 
 
 def setvars():
@@ -89,14 +89,14 @@ def on_msg_dcrypt(client,userdata,msg):
             # This function attempts to decrypt the payload data with the MA-Node symetric key
             # Function returns a byte array if decryption is successful or "None" which will
             # over-ride the global variable used to set temperatues on the actuator node.
-            decpayload=decrypt_data(skey128,bytedata)
+            decpayload=decrypt_data(SECRET_KEY,bytedata)
             if decpayload:
                 try:
                     # if the correct key was used the data should be a valid byte array
                     # that can be converted to a float
                     decval=float(decpayload)
                     settempval = decval
-                    print(str(settempval))
+                    #print(str(settempval))
                 except Exception as e:
                     print("Decryption error, terminate input processing")
                     settempval = None
