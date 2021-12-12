@@ -17,6 +17,7 @@ settempval=None # Use to track set temp values received and properly decrypted
 # not encrypted by the controller, a strong prevention against replay attacks, injection attacks 
 # and so forth .
 def on_msg_dcrypt(client,userdata,msg):
+    global settempval
     result=tuple((msg.topic).split("/"))
     # only attempt decryption on messages submitted to the encrypted ST queue which likely contain encrypted data
     if result[0]=="enctst":
@@ -35,16 +36,15 @@ def on_msg_dcrypt(client,userdata,msg):
                     # if the correct key was used the data should be a valid byte array
                     # that can be converted to a float
                     decval=float(decpayload)
-                    global settempval
                     settempval = decval
                 except Exception as e:
                     print("Decryption error, terminate input processing")
-                    global settempval
                     settempval = None
                     pass
             else:
-                global settempval
                 settempval = None
+        else:
+            settempval = None
 
 
 def decrypt_data(keystr,data):
