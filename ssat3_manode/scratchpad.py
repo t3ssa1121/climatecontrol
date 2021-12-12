@@ -43,8 +43,9 @@ def on_msg_dcrypt(client,userdata,msg):
                     pass
             else:
                 settempval = None
-        else:
-            settempval = None
+    #else:
+    #    print("empty queue message")
+    #    settempval = None
 
 
 def decrypt_data(keystr,data):
@@ -88,6 +89,7 @@ def main():
 
 
     while True:
+        settempval=None  #reset through each iteration to ensure an empty queue doesn't affect operation
         subclient=newclient('000lab23','nodetester','changeme')
         # specifies exact queue to be monitoring
         subclient.message_callback_add('enctst/000lab23',on_msg_dcrypt)
