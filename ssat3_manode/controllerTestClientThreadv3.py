@@ -32,6 +32,7 @@ from os import path
 from mysql.connector import connect, Error
 # import custom modules
 import appDb as adb
+import appEnc as aenc
 
 # Simulating the minimum and maximum temperature values that would be set by the system owner,
 # these would typically be retrieved from a database that was updated via RBAC controled application
@@ -52,6 +53,7 @@ def setvars():
     QPWD="changeme"
     QHOST="10.100.200.3"
     QPORT="1883"
+    
     return[CLIENTID,QID,QPWD,QHOST,QPORT]
 
 # MQTT client functions 
@@ -134,9 +136,17 @@ def updatediaglog(logfile,recjson):
          jsonfh.write('\n')
     return
 
+def getenckey(nodeid,keydict):
+    nodekey = keydict[nodeid]
+    return nodekey
+
+
+
 
 def main():
     nodevars=setvars()
+    # Retrieve encryption keys for each node
+    thiskeydict = aenc.getkeydict()
     subclient=newclient(nodevars[0],nodevars[1],nodevars[2])
     subclient.on_message = on_message_write
     # connect to the broker and validate before proceeding
@@ -154,11 +164,13 @@ def main():
             records=adb.getsettemp()
             for record in records:
                 manodeid,setval=record
+                print(type(setval))
                 # 
-                print("encrypt data using {} symetric key".format(manodeid))
+                thiskey=getenckey(manodeid,thiskeydict)
+                print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
                 # next functions to be built
                 print("Publishing new temperature {} for node {}".format(str(setval),manodeid))
-                newtopicpub(subclient,"st",manodeid,str(setval))
+                newtopicpub(subclient,"encst",manodeid,str(setval))
             
             time.sleep(30)
             pass
