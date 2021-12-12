@@ -20,7 +20,7 @@ def on_msg_dcrypt(client,userdata,msg):
 
 def newclient(nodeid,uid,pwd):
     manodeid='manode-{}'.format(nodeid)
-    mqclient=paho.Client(manodeid, clean_session=True, userdata=None,protocol=MQTTv311,transport="tcp")
+    mqclient=paho.Client(manodeid, clean_session=True, userdata=None)
     mqclient.username_pw_set(username=uid,password=pwd)
     # Add TLS settings when ready
     return mqclient
@@ -51,7 +51,7 @@ def main():
                 print("monitor queue for new messages")
                 time.sleep(3) # allow time for message collection, decryption & processing
                 if isinstance(settempval,float):
-                    print("submit settemp to climate control unit")
+                    print("submit this settemp {} to climate control unit".format(settempval))
                 else:
                     print("get last known good temp and submit that")
             subclient.loop_stop()
