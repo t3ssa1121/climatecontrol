@@ -140,7 +140,12 @@ def getenckey(nodeid,keydict):
     nodekey = keydict[nodeid]
     return nodekey
 
-
+# Function to encrypt the node specific set temperature value with the node's symmetric key
+def enc_settemp(tempfloat,key):
+    tempbytes=bytes(str(tempfloat))
+    print(tempbytes)
+    print(type(tempbytes))
+    return
 
 
 def main():
@@ -164,11 +169,9 @@ def main():
             records=adb.getsettemp()
             for record in records:
                 manodeid,setval=record
-                print(type(setval))
-                # 
                 thiskey=getenckey(manodeid,thiskeydict)
                 print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
-                # next functions to be built
+                enc_settemp(setval,thiskey)
                 print("Publishing new temperature {} for node {}".format(str(setval),manodeid))
                 newtopicpub(subclient,"encst",manodeid,str(setval))
             
