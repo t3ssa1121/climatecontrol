@@ -26,12 +26,19 @@
 
 
 import  paho.mqtt.client as paho
-import json, sys, datetime,random,time, threading,csv
+import json, sys, datetime,random,time, csv
 from os import environ
 from os import path
 from mysql.connector import connect, Error
 # import custom modules
 import appDb as adb
+
+# Simulating the minimum and maximum temperature values that would be set by the system owner,
+# these would typically be retrieved from a database that was updated via RBAC controled application
+sotempmin=14.99
+sotempmax=25.99
+
+
 
 def setvars():
     #CLIENTID=environ.get('CLIENTID')
@@ -45,11 +52,6 @@ def setvars():
     QPWD="changeme"
     QHOST="10.100.200.3"
     QPORT="1883"
-    #SETTEMP="/opt/storage/data/setnewtemp.csv"   # Don't need this but var order will change
-    #DBHOST="10.100.200.3"
-    #DBUSER="lpappuser"
-    #DBPWD="changeme"
-    #DBINST="qtempapp"
     return[CLIENTID,QID,QPWD,QHOST,QPORT]
 
 # MQTT client functions 
@@ -101,32 +103,7 @@ def newtopicpub(mqclient,topic,nodeid,data):
     topic='{}/{}'.format(topic,nodeid)
     mqclient.publish(topic,data, qos=1,retain=True)
     return
-'''
-# database section
-def getdbconnection(dbhost,dbuser,dbcred,dbinst):
-    try:
-        thisdbhandle = connect(host=dbhost,user=dbuser,password=dbcred,database=dbinst)
-        return thisdbhandle
-    except Error as e:
-        print(e)
 
-def newcurtempsql(nodeid,curtemp):
-    sqlstr='update nodedatatmp set curtemp={} where manodeguid="{}";'.format(curtemp,nodeid)
-    return sqlstr
-
-def newsettempsql():
-    sqlstr='select manodeguid,settemp from nodedatatmp where settemp IS NOT NULL;'
-    return sqlstr
-
-def getsettemp(nodevars):
-    newsql=newsettempsql()
-    dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
-    if dbconnect:
-        with dbconnect.cursor() as cursor:
-            cursor.execute(newsql)
-            queryresults=cursor.fetchall()
-    return queryresults
-'''
 # callback message processing section
 def processcurtemp(nodeid,msg):
     # need to call decryption key for NODE ID in order to read payload
@@ -149,16 +126,6 @@ def updatecurtemp(logfile,recdict):
          jsonfh.write('\n')
     # Write to database
     adb.updatecurtemprecords(recdict)
-    '''
-    nodevars=setvars()
-    dbconnect=getdbconnection(nodevars[6],nodevars[7],nodevars[8],nodevars[9])
-    #confirm connection before generating SQL
-    if dbconnect:
-        newsql=newcurtempsql(recdict['manodeid'],recdict['curtemp'])
-        with dbconnect.cursor() as cursor:
-            cursor.execute(newsql)
-            dbconnect.commit()
-    '''
     return
 
 def updatediaglog(logfile,recjson):
@@ -166,10 +133,6 @@ def updatediaglog(logfile,recjson):
          jsonfh.write(recjson)
          jsonfh.write('\n')
     return
-
-
-
-
 
 
 def main():
@@ -187,9 +150,7 @@ def main():
         subclient.loop_start()
         while True: 
             print("go check database for new temperature over-rides")
-            # if there is data there create a publishing client and push the data
-            # for all nodeid/settemp results:
-            #records=getsettemp(nodevars)
+            # if there is data there create a publishing client,encrypt with the node's key before publishing
             records=adb.getsettemp()
             for record in records:
                 manodeid,setval=record
