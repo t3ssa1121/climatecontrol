@@ -11,10 +11,18 @@ def on_msg_dcrypt(client,userdata,msg):
     # only attempt decryption on messages which likely contain encrypted data
     if result[0]=="enctst":
         print('decrypt me: {}'.format(str(msg.payload)))
-        print('if message valid update global variable tracking temperature to be set')
-        decryptedval=float(23.67)
-        global settempval
-        settempval = decryptedval
+        print(type(msg.payload))
+        if isinstance(msg.payload,bytes):
+            print('if message valid update global variable tracking temperature to be set')
+            bytedata=msg.payload
+            print(str(bytedata))
+            '''
+            # on success
+            global settempval
+            settempval = decryptedval
+            # else 
+            settempval=None
+            '''
 
 
 
