@@ -27,3 +27,20 @@ def getkeydict():
     #KEYFILE=environ.get('KEYFILE')
     thiskeydict=newkeydict(KEYFILE)
     return thiskeydict
+
+def encrypt_data(keystr,data):
+    bytekey=bytes(keystr,'utf-8')
+    enchandle=Fernet(bytekey)
+    encbytes=enchandle.encrypt(data)
+    return encbytes
+
+def decrypt_data(keystr,data):
+    bytekey=bytes(keystr,'utf-8')
+    enchandle=Fernet(bytekey)
+    try:
+        decbytes=enchandle.decrypt(data)
+        return decbytes
+    except Exception as e:
+        print("Payload not encrypted with authorized key")
+        pass
+        return None

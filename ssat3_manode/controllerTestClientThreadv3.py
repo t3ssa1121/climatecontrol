@@ -143,9 +143,13 @@ def getenckey(nodeid,keydict):
 # Function to encrypt the node specific set temperature value with the node's symmetric key
 def enc_settemp(tempfloat,key):
     tempbytes=bytes(str(tempfloat),'utf-8')
-    print(tempbytes)
-    print(type(tempbytes))
-    return
+    enc_payload=aenc.encrypt_data(key,tempbytes)
+    print(enc_payload)  # This is bytes, will need to be a string for publishing to the topic
+    enc_payloadstr=enc_payload.decode('utf-8')
+    print(type(enc_payloadstr))
+    return enc_payloadstr
+
+
 
 
 def main():
@@ -171,9 +175,10 @@ def main():
                 manodeid,setval=record
                 thiskey=getenckey(manodeid,thiskeydict)
                 print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
-                enc_settemp(setval,thiskey)
-                print("Publishing new temperature {} for node {}".format(str(setval),manodeid))
-                newtopicpub(subclient,"encst",manodeid,str(setval))
+                enc_str=enc_settemp(setval,thiskey)
+                print("Publishing new temperature {} for node {}".format(enc_str,manodeid))
+                #newtopicpub(subclient,"encst",manodeid,str(setval))
+                newtopicpub(subclient,"encst",manodeid,enc_str)
             
             time.sleep(30)
             pass

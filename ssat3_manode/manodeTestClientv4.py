@@ -22,6 +22,7 @@ from os import environ, path
 from cryptography.fernet import Fernet
 # import custom modules
 import controlUnit as cu
+import appEnc as aenc
 # Global variables
 settempval=None # Use to track set temp values received and properly decrypted
 SECRET_KEY='xB0O3-6KbNrPaLFJGBr2Rdpm9rVVz8K7trDVk-h6cQs='
@@ -105,6 +106,7 @@ def on_msg_dcrypt(client,userdata,msg):
             else:
                 settempval = None
 
+# Change over to using the imported module
 def decrypt_data(keystr,data):
     bytekey=bytes(keystr,'utf-8')
     enchandle=Fernet(bytekey)
