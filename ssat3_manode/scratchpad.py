@@ -57,3 +57,6 @@ def main():
             subclient.loop_stop()
             subclient.disconnect()
         time.sleep(30)
+
+if __name__=="__main__":
+    main()
