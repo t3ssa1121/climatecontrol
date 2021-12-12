@@ -17,10 +17,11 @@ settempval=None # Use to track set temp values received and properly decrypted
 # not encrypted by the controller, a strong prevention against replay attacks, injection attacks 
 # and so forth .
 def on_msg_dcrypt(client,userdata,msg):
-    global settempval
     result=tuple((msg.topic).split("/"))
     # only attempt decryption on messages submitted to the encrypted ST queue which likely contain encrypted data
     if result[0]=="enctst":
+        global settempval
+        print("currentsettempval:{}".format(str(settempval)))
         print('decrypt me: {}'.format(str(msg.payload)))
         print(type(msg.payload))
         if isinstance(msg.payload,bytes):
@@ -37,6 +38,7 @@ def on_msg_dcrypt(client,userdata,msg):
                     # that can be converted to a float
                     decval=float(decpayload)
                     settempval = decval
+                    print(str(settempval))
                 except Exception as e:
                     print("Decryption error, terminate input processing")
                     settempval = None
@@ -100,6 +102,7 @@ def main():
             if substats[0]==0:
                 print("monitor queue for new messages")
                 time.sleep(3) # allow time for message collection, decryption & processing
+                print("currentsettempval:{}".format(str(settempval)))
                 if isinstance(settempval,float):
                     print("submit this settemp {} to climate control unit".format(settempval))
                 else:
