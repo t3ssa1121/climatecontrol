@@ -174,8 +174,8 @@ def main():
         if mqconstat == 0:
             subclient.loop_start()
             # check for new temperature setting on "st" message queue
-            print("checking st/{} queue for new temperature".format(nodevars[1]))
-            subresult=newtopicsub(subclient,"st",nodevars[1])
+            print("checking encst/{} queue for new temperature".format(nodevars[1]))
+            subresult=newtopicsub(subclient,"encst",nodevars[1])
             if subresult[0]==0:
                 print("new message on set temp queue")
                 time.sleep(3)
