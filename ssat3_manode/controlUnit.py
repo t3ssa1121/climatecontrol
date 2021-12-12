@@ -38,6 +38,7 @@ class TempSensor:
         #initate a thermometer class with a safe default temperature of 19 degrees Celcius
         self.name = name
         self.curtemp = float(19.0)
+        self.targettemp = float(19.0)
 
     def settemp(self,tempchange):
         # accepts positive or negative floating value to simulate cooling or heating
@@ -88,7 +89,6 @@ def testnewtemp(st,tsensor):
 
     # get current temperature
     ct=tsensor.gettemp()[1]
-    print(ct)
     # compare set temp value with current temp
     # leave heating & cooling off if difference is within ~ .5 of a degree
  

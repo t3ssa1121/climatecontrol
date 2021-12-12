@@ -105,10 +105,10 @@ def main():
                 if isinstance(settempval,float):
                     print("submit this settemp {} to climate control unit".format(settempval))
                 else:
+                    settempval=None
                     print("get last known good temp and submit that")
             subclient.loop_stop()
             subclient.disconnect()
-            global settempval
             settempval=None  #reset through each iteration to ensure an empty queue doesn't affect operation
         time.sleep(30)
 
