@@ -79,6 +79,7 @@ def on_msg_dcrypt(client,userdata,msg):
     result=tuple((msg.topic).split("/"))
     # only attempt decryption on messages submitted to the encrypted ST queue which likely contain encrypted data
     if result[0]=="encst":
+        #SECRET_KEY=environ.get('SKEY128') #Retrieve encryption key when needed at run time
         global settempval
         print('decrypt the following payload:\n{}'.format(str(msg.payload)))
         print(type(msg.payload))
@@ -121,7 +122,7 @@ def encrypt_data(keystr,data):
     encbytes=enchandle.encrypt(data)
     return encbytes
 
-'''
+# MQTT callback processing in clear text 
 def on_message_update(mqclient, userdata, msg):
     # when message is recieved on a queue that is subscribed to this callback event fires
     # read the content of the message, call functions based on content
@@ -138,8 +139,6 @@ def on_message_update(mqclient, userdata, msg):
     return
 
 def procsettemp(msg):
-    # Decrypt payload here:
-
     # double check message is a float value
     try:
         settemp=float((msg.payload).decode("utf-8"))
@@ -148,7 +147,7 @@ def procsettemp(msg):
         print("Invalid payload")
         print(e)
         return
-'''
+
 
 def main():
     nodevars=setvars()
@@ -167,7 +166,7 @@ def main():
     while True:
         # check for new temperature
         subclient=newclient(nodevars[1],nodevars[2],nodevars[3])
-        #subclient.on_message = on_message_update
+        #subclient.on_message = on_message_update # clear text version
         enctopic='encst/{}'.format(nodevars[1])
         subclient.message_callback_add(enctopic,on_msg_dcrypt)
         mqconstat=newconnect(subclient,nodevars[4],nodevars[5])
@@ -177,7 +176,7 @@ def main():
             print("checking encst/{} queue for new temperature".format(nodevars[1]))
             subresult=newtopicsub(subclient,"encst",nodevars[1])
             if subresult[0]==0:
-                print("new message on set temp queue")
+                print("connected, waiting for callbacks")
                 time.sleep(3)
                 if isinstance(settempval,float):
                     hclist=cu.testnewtemp(settempval,tempsensor1)
@@ -199,8 +198,7 @@ def main():
         subclient.loop_stop()
         subclient.disconnect()
         monitorcycle+=1
-        
-            
+          
         # Update current temperature every 3rd iteration, 
         if monitorcycle%3 == 0:
             tempdata=tempsensor1.gettemp()
@@ -210,7 +208,7 @@ def main():
                 newtopicpub(pubclient,"ct",nodevars[1],tempdata[1])
                 monitorcycle+=1
                 pubclient.disconnect()
-            # every 15-20 minutes collect diagnostics and publish them (change to 20 for prod )
+        # every 15-20 minutes collect diagnostics and publish them (change to 20 for prod )
         if monitorcycle >= 12:
             diagdata=cu.newdiag(nodevars[1],comfailurecount)
             pubclient=newclient(nodevars[1],nodevars[2],nodevars[3])
@@ -219,7 +217,7 @@ def main():
                 newtopicpub(pubclient,"dd",nodevars[1],diagdata)
                 pubclient.disconnect()
             monitorcycle=0
-            
+        # Adjust this value to 60-90 seconds in a production environment    
         time.sleep(random.randint(15,18))
         
 
