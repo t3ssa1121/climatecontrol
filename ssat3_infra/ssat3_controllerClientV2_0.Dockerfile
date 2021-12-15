@@ -18,7 +18,7 @@ tcpdump \
 RUN mkdir /opt/storage && \
 mkdir /opt/storage/logs && \
 mkdir /opt/storage/conf && \
-mkdir /opt/storage/priv
+mkdir /opt/storage/conf/priv
 # Build environment
 RUN mkdir /opt/qtemp && \
 mkdir /opt/qtemp/priv
@@ -36,8 +36,8 @@ COPY controllerClientv2_0.py /opt/qtemp
 COPY appDb.py  /opt/qtemp
 COPY appEnc.py  /opt/qtemp
 # copy encryption records into private location
-COPY manode_keypairs.csv /opt/qtemp/priv
-RUN chown lpuser:lpuser /opt/qtemp/priv/manode_keypairs.csv
+COPY manode_keypairs.csv /opt/storage/conf/priv
+#RUN chown lpuser:lpuser /opt/qtemp/priv/manode_keypairs.csv
 # change to starting python on startup once 
 #CMD ["bash"]
 CMD ["python3","./controllerClientv2_0.py"]
