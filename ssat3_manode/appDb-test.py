@@ -18,13 +18,17 @@
 #------------------------------------------------------------------------------------------------------
 
 from mysql.connector import connect, Error
-from os import environ
 
 
-DBHOST=environ.get('DBHOST')
-DBUSER=environ.get('DBUSER')
-DBPWD=environ.get('DBPWD')
-DBINST=environ.get('DBINST')
+#DBHOST=environ.get('DBHOST')
+#DBUSER=environ.get('DBUSER')
+#DBPWD=environ.get('DBPWD')
+#DBINST=environ.get('DBINST')
+# temp standalone testing
+DBHOST="10.100.200.3"
+DBUSER="lpappuser"
+DBPWD="changeme"
+DBINST="qtempapp"
 
 
 # Database connection and query execution functions

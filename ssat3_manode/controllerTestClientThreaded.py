@@ -137,6 +137,11 @@ def newtopictreesub(mqclient,topic):
     mqclient.subscribe(topic)
     return
 
+def newtopicpub(mqclient,topic,nodeid,data):
+    topic='{}/{}'.format(topic,nodeid)
+    mqclient.publish(topic,data, qos=1,retain=True)
+    return
+    
 def newtemp():
     curtemp=str(round(random.uniform(10.00,35.00),2))
     return curtemp
