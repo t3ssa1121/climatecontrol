@@ -11,9 +11,10 @@
 #------------------------------------------------------------------------------------------------------
 import csv
 from cryptography.fernet import Fernet
+from os import environ
 
 # Temporary for testing, define as env for Docker startup
-KEYFILE='/var/tmp/manode_keypairs.csv'
+#KEYFILE='/var/tmp/manode_keypairs.csv'
 
 # Encryption section
 # Create in memory store of encryption keys
@@ -24,7 +25,7 @@ def newkeydict(keyfile):
     return keydict
 
 def getkeydict():
-    #KEYFILE=environ.get('KEYFILE')
+    KEYFILE=environ.get('KEYFILE')
     thiskeydict=newkeydict(KEYFILE)
     return thiskeydict
 

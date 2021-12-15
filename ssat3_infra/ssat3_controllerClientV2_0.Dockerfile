@@ -17,7 +17,8 @@ tcpdump \
 # create a directories for persistent storage
 RUN mkdir /opt/storage && \
 mkdir /opt/storage/logs && \
-mkdir /opt/storage/conf
+mkdir /opt/storage/conf && \
+mkdir /opt/storage/priv
 # Build environment
 RUN mkdir /opt/qtemp
 WORKDIR /opt/qtemp
@@ -33,6 +34,9 @@ COPY controllerClientv2_0.py /opt/qtemp
 #  Copy python modules
 COPY appDb.py  /opt/qtemp
 COPY appEnc.py  /opt/qtemp
+# copy encryption records into private location
+COPY manode_keypairs.csv /opt/storage/priv
+RUN chown lpuser:lpuser /opt/storage/priv/manode_keypairs.csv
 # change to starting python on startup once 
 #CMD ["bash"]
 CMD ["python3","./controllerClientv2_0.py"]
