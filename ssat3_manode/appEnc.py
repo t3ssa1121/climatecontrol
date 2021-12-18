@@ -18,7 +18,7 @@ from os import environ
 
 # Encryption section
 # Create in memory store of encryption keys
-def newkeydict(keyfile):
+def newkeydict():
     #with open(keyfile, mode='r') as nkcsv:
     #    csvreader = csv.reader(nkcsv)
     #    keydict = { rec[0]:rec[1] for rec in csvreader}

@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 #  Author(s): Doug Leece  
 #  Version Notes: 0, initial build  (Dec 8, 2021)
+#                 1, minor modifications to run in docker container
+#                 2, moving imported modules back into functions 
 #                   
 #  Using the python paho client https://www.eclipse.org/paho/index.php?page=clients/python/index.php to
 #  limit the amount of additional software to be installed on the microservice container.
@@ -26,35 +28,35 @@
 
 
 import  paho.mqtt.client as paho
-import json, sys, datetime,random,time, csv
+import json, datetime,random,time
 from os import environ
-from os import path
 from mysql.connector import connect, Error
 # import custom modules
-import appDb as adb
+#import appDb as adb
 import appEnc as aenc
+
 
 # Simulating the minimum and maximum temperature values that would be set by the system owner,
 # these would typically be retrieved from a database that was updated via RBAC controled application
 sotempmin=14.99
 sotempmax=25.99
 
-
-
+# Retrieve data from environmental variables rather than hard coding into program
 def setvars():
-    #CLIENTID=environ.get('CLIENTID')
-    #QID=environ.get('QID')
-    #QPWD=environ.get('QPWD')
-    #QHOST=environ.get('QHOST')
-    #QPORT=environ.get('QPORT')
-    # temp standalone testing
-    CLIENTID='123456'
-    QID="nodetester"
-    QPWD="changeme"
-    QHOST="10.100.200.3"
-    QPORT="1883"
-    
+    CLIENTID=environ.get('CLIENTID')
+    QID=environ.get('QID')
+    QPWD=environ.get('QPWD')
+    QHOST=environ.get('QHOST')
+    QPORT=environ.get('QPORT')
     return[CLIENTID,QID,QPWD,QHOST,QPORT]
+
+def setdbvars():
+    DBHOST=environ.get('DBHOST')
+    DBUSER=environ.get('DBUSER')
+    DBPWD=environ.get('DBPWD')
+    DBINST=environ.get('DBINST')
+    return[DBHOST,DBUSER,DBPWD,DBINST]
+
 
 # MQTT client functions 
 # configure client connection so it is uniquely identified and also has a username and password applied
@@ -127,7 +129,7 @@ def updatecurtemp(logfile,recdict):
          json.dump(recdict,jsonfh)
          jsonfh.write('\n')
     # Write to database
-    adb.updatecurtemprecords(recdict)
+    updatecurtemprecords(recdict)
     return
 
 def updatediaglog(logfile,recjson):
@@ -144,9 +146,7 @@ def getenckey(nodeid,keydict):
 def enc_settemp(tempfloat,key):
     tempbytes=bytes(str(tempfloat),'utf-8')
     enc_payload=aenc.encrypt_data(key,tempbytes)
-    #print(enc_payload)  # This is bytes, will need to be a string for publishing to the topic
     enc_payloadstr=enc_payload.decode('utf-8')
-    #print(type(enc_payloadstr))
     return enc_payloadstr
 
 def tesstsetval(tempcal,min,max):
@@ -156,7 +156,46 @@ def tesstsetval(tempcal,min,max):
         return False
 
 
+# Database connection and query execution functions
+def getdbconnection(dbhost,dbuser,dbcred,dbinst):
+    try:
+        thisdbhandle = connect(host=dbhost,user=dbuser,password=dbcred,database=dbinst)
+        return thisdbhandle
+    except Error as e:
+        print(e)
 
+def getsettemp():
+    dbvars=setdbvars()
+    newsql=newsettempsql()
+    dbconnect=getdbconnection(dbvars[0],dbvars[1],dbvars[2],dbvars[3])
+    if dbconnect:
+        with dbconnect.cursor() as cursor:
+            cursor.execute(newsql)
+            queryresults=cursor.fetchall()
+    return queryresults
+
+def updatecurtemprecords(recdict):
+    dbvars=setdbvars()
+    dbconnect=getdbconnection(dbvars[0],dbvars[1],dbvars[2],dbvars[3])
+    #dbconnect=getdbconnection(DBHOST,DBUSER,DBPWD,DBINST)
+    #confirm connection before generating SQL
+    if dbconnect:
+        newsql=newcurtempsql(recdict['manodeid'],recdict['curtemp'])
+        with dbconnect.cursor() as cursor:
+            cursor.execute(newsql)
+            dbconnect.commit()
+    # to do, check for successful updates. Out of scope due to time contraints, 
+    # set temperature changes from users are prioritized over monitoring via web app
+    return
+
+# Application specific SQL
+def newcurtempsql(nodeid,curtemp):
+    sqlstr='update nodedatatmp set curtemp={} where manodeguid="{}";'.format(curtemp,nodeid)
+    return sqlstr
+
+def newsettempsql():
+    sqlstr='select manodeguid,settemp from nodedatatmp where settemp IS NOT NULL;'
+    return sqlstr
 
 
 
@@ -176,9 +215,9 @@ def main():
         # Loop start puts queue subscription into a background thread
         subclient.loop_start()
         while True: 
-            print("go check database for new temperature over-rides")
+            print("Program loop will check database service for new temperature settings from users")
             # if there is data there create a publishing client,encrypt with the node's key before publishing
-            records=adb.getsettemp()
+            records=getsettemp()
             for record in records:
                 manodeid,setval=record
                 if tesstsetval(setval,sotempmin,sotempmax):
@@ -190,7 +229,8 @@ def main():
                 else:
                     print("Set Temperature value {} is outside authorized minium and maximum settings for node {}".format(setval,manodeid))
             
-            time.sleep(30)
+            #Adjust this interval to preferred frequency, value is seconds
+            time.sleep(30) 
             pass
 
 if __name__=="__main__":
