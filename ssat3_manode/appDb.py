@@ -42,7 +42,9 @@ def getsettemp():
         with dbconnect.cursor() as cursor:
             cursor.execute(newsql)
             queryresults=cursor.fetchall()
-    return queryresults
+        return queryresults
+    else:
+        return None
 
 def updatecurtemprecords(recdict):
     dbconnect=getdbconnection(DBHOST,DBUSER,DBPWD,DBINST)
