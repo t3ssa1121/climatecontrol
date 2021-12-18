@@ -2,7 +2,8 @@
 #  Author(s): Doug Leece  
 #  Version Notes: 0, initial build  (Dec 8, 2021)
 #                 1, minor modifications to run in docker container
-#                 2, moving imported modules back into functions 
+#                 2, moving imported modules back into functions
+#                  
 #                   
 #  Using the python paho client https://www.eclipse.org/paho/index.php?page=clients/python/index.php to
 #  limit the amount of additional software to be installed on the microservice container.
@@ -172,7 +173,9 @@ def getsettemp():
         with dbconnect.cursor() as cursor:
             cursor.execute(newsql)
             queryresults=cursor.fetchall()
-    return queryresults
+        return queryresults
+    else:
+        return None
 
 def updatecurtemprecords(recdict):
     dbvars=setdbvars()
@@ -218,16 +221,17 @@ def main():
             print("Program loop will check database service for new temperature settings from users")
             # if there is data there create a publishing client,encrypt with the node's key before publishing
             records=getsettemp()
-            for record in records:
-                manodeid,setval=record
-                if tesstsetval(setval,sotempmin,sotempmax):
-                    thiskey=getenckey(manodeid,thiskeydict)
-                    print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
-                    enc_str=enc_settemp(setval,thiskey)
-                    print("Publishing new temperature {} for node {}\n encrypted as {}".format(setval,manodeid,enc_str))
-                    newtopicpub(subclient,"encst",manodeid,enc_str)
-                else:
-                    print("Set Temperature value {} is outside authorized minium and maximum settings for node {}".format(setval,manodeid))
+            if records is not None:
+                for record in records:
+                    manodeid,setval=record
+                    if tesstsetval(setval,sotempmin,sotempmax):
+                        thiskey=getenckey(manodeid,thiskeydict)
+                        print("encrypt setval data {} using {} symetric key {}".format(setval,manodeid, thiskey))
+                        enc_str=enc_settemp(setval,thiskey)
+                        print("Publishing new temperature {} for node {}\n encrypted as {}".format(setval,manodeid,enc_str))
+                        newtopicpub(subclient,"encst",manodeid,enc_str)
+                    else:
+                        print("Set Temperature value {} is outside authorized minium and maximum settings for node {}".format(setval,manodeid))
             
             #Adjust this interval to preferred frequency, value is seconds
             time.sleep(30) 

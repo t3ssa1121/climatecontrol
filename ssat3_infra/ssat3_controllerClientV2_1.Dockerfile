@@ -36,6 +36,6 @@ COPY controllerClientv2_1.py /opt/qtemp
 #COPY appDb.py  /opt/qtemp
 COPY appEnc.py  /opt/qtemp
 # copy encryption records into private location
-COPY manode_keypairs.csv /opt/storage/conf/priv
+#COPY manode_keypairs.csv /opt/storage/conf/priv
 # Start application
 CMD ["python3","./controllerClientv2_1.py"]
