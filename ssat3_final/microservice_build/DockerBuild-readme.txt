@@ -6,3 +6,6 @@ sudo docker run -h controller-main --name controller-main-22   --env-file .env_c
 
 # Build commands for manode
 sudo docker build -t ssat3_manode:2.0 -f ssat3_manodeV2_0.Dockerfile  .
+
+
+sudo docker run -h manode5 --name manode5   --env-file .env_node5  --add-host=mqbroker.qtemp.local:10.100.200.3  -i -t  ssat3_manode:2.0
