@@ -39,6 +39,10 @@ def setvars():
     QPORT=environ.get('QPORT')
     return[SECRET_KEY,NODEID,QID,QPWD,QHOST,QPORT]
 
+# MQTT broker has anonymous connections disabled,
+# therefore usename and password must be set for each connection
+# Each MA-Node should have it's own unique username & password 
+# which is configured during docker run using an env file.
 def newclient(nodeid,uid,pwd):
     manodeid='manode-{}'.format(nodeid)
     mqclient=paho.Client(manodeid)

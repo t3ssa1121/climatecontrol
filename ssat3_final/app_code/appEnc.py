@@ -13,8 +13,6 @@ import csv
 from cryptography.fernet import Fernet
 from os import environ
 
-# Temporary for testing, define as env for Docker startup
-#KEYFILE='/var/tmp/manode_keypairs.csv'
 
 # Encryption section
 # Create in memory store of encryption keys
