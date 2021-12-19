@@ -1,0 +1,116 @@
+- name: Get host info
+  hosts: ssamqtt
+  gather_facts: True
+  tasks:
+      # Install required software packages
+      - name: Upgrading new Ubuntu 20 LTS server to latest apt packages
+        become: yes
+        apt:
+            update_cache: yes
+            force_apt_get: yes
+            upgrade: dist
+        when: ansible_os_family == 'Debian'
+
+
+      # Add Mosquito user and change directory ownwership
+      - name: "Create Mosquitto group"
+        ansible.builtin.group:
+          name: mosquitto
+          state: present
+          gid: 1883
+        become: yes
+
+      - name: " create mosquitto user"
+        ansible.builtin.user:
+          name: mosquitto
+          shell: /usr/bin/bash
+          comment: "MQTT Broker user"
+          uid: 1883
+          group: mosquitto
+        become: yes
+
+
+
+      # Storage location for MQTT persistent storage
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes  
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto/data
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes 
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto/config
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes 
+
+      - name: Create MQTT storage location
+        ansible.builtin.file:
+          path: /opt/mosquitto/log
+          state: directory
+          mode: '0755'
+          owner: mosquitto
+          group: mosquitto
+        become: yes 
+
+      # to-do Create MQTT config file and copy it in place
+      - name: create config file for listener
+        ansible.builtin.blockinfile:
+          path: /opt/mosquitto/config/mosquitto.conf
+          backup: yes
+          create: yes
+          group: mosquitto
+          owner: mosquitto
+          mode: 0755
+          state: present
+          marker: ""
+          block: |
+            #---------- Modified conf file ----------
+            listener 1883
+            #
+            persistence true
+            persistence_location /mosquitto/data/
+            #
+            log_dest file /mosquitto/log/mosquitto.log
+            log_dest stdout
+            #
+            password_file /mosquitto/config/mosquitto.passwd
+            allow_anonymous false
+        become: yes
+
+      # add password file
+      - name: create password file with random complex cred
+        ansible.builtin.blockinfile:
+          path: /opt/mosquitto/config/mosquitto.passwd
+          backup: yes
+          create: yes
+          group: mosquitto
+          owner: mosquitto
+          mode: 0755
+          state: present
+          block: |
+            placeholder:$7$101$XPaHpUl+gGsX2gXp$6IEbTFqz8pNZKV9xH8HVXHPVxQ1UHZbOSJCg39YyRC09wXrZT5SpKcisuUvpn6YvwxpzbNz4oJOx8Xa+xMpKBQ==
+            nodetester:$7$101$DiKCuNBrRCMHJgiU$M+hcnGfuvqVOlwwIFsqxE52hhnHW2x75IRuafxHX7PjaFxwY3H1jiG60TOJ612nGAdeTEsvFl7l4EnKrz5i3qA==
+        become: yes
+
+
+
+
+      
+

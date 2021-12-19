@@ -17,8 +17,8 @@
 ############################################################
 
 import  paho.mqtt.client as paho
-import json, sys, datetime,random,time
-from os import environ, path
+import random,time
+from os import environ
 from cryptography.fernet import Fernet
 # import custom modules
 import controlUnit as cu
@@ -74,7 +74,7 @@ def on_msg_dcrypt(client,userdata,msg):
     result=tuple((msg.topic).split("/"))
     # only attempt decryption on messages submitted to the encrypted ST queue which likely contain encrypted data
     if result[0]=="encst":
-        #SECRET_KEY=environ.get('SKEY128') #Retrieve encryption key when needed at run time
+        SECRET_KEY=environ.get('SKEY128') #Retrieve encryption key when needed at run time
         global settempval
         print('decrypt the following payload:\n{}'.format(str(msg.payload)))
         print(type(msg.payload))
@@ -118,21 +118,6 @@ def encrypt_data(keystr,data):
     encbytes=enchandle.encrypt(data)
     return encbytes
 
-# MQTT callback processing in clear text 
-def on_message_update(mqclient, userdata, msg):
-    # when message is recieved on a queue that is subscribed to this callback event fires
-    # read the content of the message, call functions based on content
-    result=tuple((msg.topic).split("/"))
-    if result[0]=="st":
-        print("Received new temperature setting for {} : {}".format(result[1],str(msg.payload)))
-        settemp=procsettemp(msg)
-        if isinstance(settemp,float):
-            global newtemp
-            newtemp=settemp
-    else:
-        print("warning undefined topic: {}".format(msg.topic))
-        # write to security log       
-    return
 
 def procsettemp(msg):
     # double check message is a float value
@@ -153,7 +138,7 @@ def main():
     # Diagnositcs loop control
     monitorcycle=0
     # Instantiate digital thermometer simulation
-    tempsensor1 = cu.TempSensor("MA-Node_lab")
+    tempsensor1 = cu.TempSensor(nodevars[1])
     # get curent temperature in controlled zone and set heating/cooling to off
     tempdata=tempsensor1.gettemp()
     cool=False
@@ -213,7 +198,9 @@ def main():
                 newtopicpub(pubclient,"dd",nodevars[1],diagdata)
                 pubclient.disconnect()
             monitorcycle=0
-        # Adjust this value to 60-90 seconds in a production environment    
+        # Adjust this value to 60-90 seconds in a production environment
+        # Suggest applying 5-10 seconds of randomization to the looping to avoid a flood of events in the
+        # scenario where a number of units all come back online at once.    
         time.sleep(random.randint(15,18))
         
 
