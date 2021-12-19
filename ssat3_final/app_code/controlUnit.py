@@ -1,17 +1,21 @@
 #!/usr/bin/env python3
 #  Author(s): Doug Leece  
 #  Version Notes: 0, initial build
+#                 1, minor modifications for container use
 #               
 #   A module to manage all the classes and functions needed for the climate control
-#   simulation. A typical heating and cooling unit would have noe or mroe independant 
+#   simulation. A typical heating and cooling unit would have one or more independant 
 #   sensors to check the area temperature and logic to determine if the current temperature
 #   is within the desired range. When determined to be either too hot, or too cold the
-#   appropriate cooling or heating function should be undertaken. 
+#   appropriate cooling or heating function should be undertaken. Additionally, each type of IOT 
+#   platform will have specific programing reqquirements to interact with the electrical input and
+#   output system on the board. This module could be extended or replaced to accomodate the
+#   specific library and hardware requirements. https://www.ics.com/blog/control-raspberry-pi-gpio-pins-python  
 #   
 #   
 #    During both heating an cooling cycles the temperature should also be monitored to identify
 #    when the heating or cooling action should be returned to the "off state". Once the desired 
-#    temperature has been achieved it should be maintained a steady statewithin .5 to 1 degree
+#    temperature has been achieved it should be maintained a steady state within .5 to 1 degree
 #    until a new temperature change is requested by the person managaing the zone or a scheduled
 #    temperature change. All such change decions are managed outside of this module.
 #    
