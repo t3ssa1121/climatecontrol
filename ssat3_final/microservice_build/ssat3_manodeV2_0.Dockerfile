@@ -28,7 +28,7 @@ RUN groupadd --gid 2000 lpuser && useradd --create-home --gid 2000 --uid 2000 lp
 USER lpuser
 # Update requirements as needed
 COPY ma-node_requirements.txt  /opt/qtemp/manode/requirements.txt
-RUN pip install -r /opt/src/requirements.txt
+RUN pip install -r /opt/qtemp/manode/requirements.txt
 #
 #  Copy primary python script
 COPY manodeClient.py /opt/qtemp/manode
